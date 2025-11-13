@@ -1,0 +1,95 @@
+{% extends 'game/base.html' %}
+
+{% block title %}Pantheon - Help{% endblock %}
+
+{% block content %}
+<div class="help-section">
+    <h1>How to Play Pantheon</h1>
+    
+    <h2>Goal</h2>
+    <p>Be the first player to complete three cards that all share the same element (Earth, Air, Fire, or Water).</p>
+
+    <h2>Elements</h2>
+    <ul>
+        <li>Earth</li>
+        <li>Air</li>
+        <li>Fire</li>
+        <li>Water</li>
+    </ul>
+
+    <h2>Setup</h2>
+    <ol>
+        <li>All cards are shuffled together.</li>
+        <li>Each player draws 3 cards as their Active Cards.</li>
+        <li>The remaining cards form the Deck.</li>
+        <li>Each player may use one Retrograde in the game.</li>
+    </ol>
+
+    <h2>Card Types</h2>
+    <h3>Active Cards</h3>
+    <ul>
+        <li>These are 3 cards in the player's hand</li>
+        <li>Each has a challenge to complete</li>
+        <li>Until completed, the disadvantage is in effect</li>
+    </ul>
+
+    <h3>Completed Cards</h3>
+    <ul>
+        <li>Cards that have had their challenge successfully completed</li>
+        <li>Kept face-up in front of the player</li>
+    </ul>
+
+    <h3>Retrograde Cards</h3>
+    <ul>
+        <li>When used, all players' Completed Cards return to the deck</li>
+        <li>Each player may only use this effect once</li>
+    </ul>
+
+    <h2>Turn Actions</h2>
+    <p>Each turn, a player can do one of these:</p>
+    <ul>
+        <li>Choose 1 Active Card and attempt its challenge
+            <ul>
+                <li>If completed → move to Completed Cards</li>
+                <li>If failed → apply its disadvantage</li>
+            </ul>
+        </li>
+        <li>Forsake (Discard) an Active card and draw a single card from the deck</li>
+        <li>Trade with the opposing player</li>
+        <li>Skip turn (cannot skip more than once in a row)</li>
+    </ul>
+
+    <h2>Winning</h2>
+    <p>A player wins when they have three Completed Cards of the same element.</p>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .help-section {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .help-section h2 {
+        color: #2c3e50;
+        margin-top: 30px;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+    }
+
+    .help-section h3 {
+        color: #34495e;
+        margin-top: 20px;
+    }
+
+    .help-section ul, .help-section ol {
+        margin-bottom: 20px;
+    }
+
+    .help-section li {
+        margin-bottom: 8px;
+    }
+</style>
+{% endblock %}

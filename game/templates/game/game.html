@@ -1,0 +1,81 @@
+{% extends 'game/base.html' %}
+
+{% block title %}Pantheon - Game{% endblock %}
+
+{% block content %}
+<div class="game-board">
+    <div class="row">
+        <!-- Player 2 Area -->
+        <div class="col-12 mb-4">
+            <div class="player-area player-2">
+                <h3>Player 2</h3>
+                <div class="active-cards">
+                    <!-- Active cards will be dynamically added here -->
+                </div>
+                <div class="completed-cards">
+                    <!-- Completed cards will be shown here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Controls -->
+        <div class="col-12 mb-4">
+            <div class="game-controls text-center">
+                <button class="btn btn-primary" id="draw-card">Draw Card</button>
+                <button class="btn btn-warning" id="retrograde">Use Retrograde</button>
+                <button class="btn btn-secondary" id="skip-turn">Skip Turn</button>
+            </div>
+        </div>
+
+        <!-- Player 1 Area -->
+        <div class="col-12">
+            <div class="player-area player-1">
+                <h3>Player 1</h3>
+                <div class="active-cards">
+                    <!-- Active cards will be dynamically added here -->
+                </div>
+                <div class="completed-cards">
+                    <!-- Completed cards will be shown here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .player-area {
+        padding: 20px;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .active-cards, .completed-cards {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+        min-height: 150px;
+        padding: 10px;
+        background: rgba(0,0,0,0.05);
+        border-radius: 4px;
+    }
+
+    .game-controls {
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    .game-controls button {
+        margin: 0 10px;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Game logic will be added here
+</script>
+{% endblock %}
