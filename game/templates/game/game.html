@@ -2,17 +2,470 @@
 
 {% block title %}Pantheon - Game{% endblock %}
 
+{% block extra_css %}
+<style>
+    body {
+        background: #0a0a1a;
+        color: #e2e8ff;
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        position: relative;
+        overflow-x: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: 
+            radial-gradient(circle at 20% 30%, rgba(80, 60, 180, 0.4) 0%, transparent 50%),
+            radial-gradient(circle at 80% 70%, rgba(60, 80, 200, 0.3) 0%, transparent 50%),
+            radial-gradient(circle at 40% 80%, rgba(120, 40, 200, 0.2) 0%, transparent 50%),
+            url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25'%3E%3Cdefs%3E%3Cpattern id='stars' width='100' height='100' patternUnits='userSpaceOnUse'%3E%3Ccircle cx='50' cy='50' r='0.5' fill='%23ffffff' opacity='0.8'/%3E%3Ccircle cx='20' cy='20' r='0.3' fill='%23ffffff' opacity='0.6'/%3E%3Ccircle cx='80' cy='80' r='0.4' fill='%23ffffff' opacity='0.7'/%3E%3Ccircle cx='30' cy='70' r='0.2' fill='%23ffffff' opacity='0.5'/%3E%3Ccircle cx='70' cy='30' r='0.3' fill='%23ffffff' opacity='0.6'/%3E%3Ccircle cx='10' cy='40' r='0.4' fill='%23ffffff' opacity='0.7'/%3E%3Ccircle cx='90' cy='60' r='0.3' fill='%23ffffff' opacity='0.6'/%3E%3Ccircle cx='40' cy='10' r='0.2' fill='%23ffffff' opacity='0.5'/%3E%3Ccircle cx='60' cy='90' r='0.3' fill='%23ffffff' opacity='0.6'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23stars)'/%3E%3C/svg%3E");
+        z-index: -1;
+    }
+
+    .game-board {
+        padding: 20px;
+        width: 95%;
+        max-width: 1000px; /* Fixed maximum width */
+        margin: 0 auto;
+    }
+
+    .player-area {
+        padding: 20px;
+        border: 2px solid rgba(100, 100, 200, 0.3);
+        border-radius: 12px;
+        margin-bottom: 20px;
+        background: rgba(20, 20, 40, 0.8);
+        backdrop-filter: blur(10px);
+    }
+
+    .player-1 {
+        border-color: #4CAF50;
+    }
+
+    .player-2 {
+        border-color: #FF5722;
+    }
+
+    .active-cards, .completed-cards {
+        display: flex;
+        gap: 15px;
+        margin-top: 15px;
+        min-height: 160px;
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .card {
+        width: 120px;
+        height: 160px;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        padding: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .card.completed {
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        border-color: #4CAF50;
+    }
+
+    .game-controls {
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        margin: 20px 0;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(100, 100, 200, 0.3);
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .game-controls .btn {
+        margin: 8px;
+        padding: 12px 20px;
+        font-weight: 600;
+        border-radius: 8px;
+        min-width: 160px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: translateY(-2px);
+    }
+
+    .btn-warning {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        border: none;
+        color: white;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        border: none;
+    }
+
+    /* Hamburger Menu */
+    .hamburger-menu {
+        position: fixed;
+        top: 1rem;
+        left: 1rem;
+        z-index: 1000;
+        background: rgba(20, 20, 40, 0.8);
+        border: 1px solid rgba(100, 100, 200, 0.3);
+        border-radius: 8px;
+        padding: 10px 12px;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        transition: all 0.3s ease;
+    }
+
+    .hamburger-menu:hover {
+        background: rgba(80, 80, 200, 0.3);
+        border-color: rgba(120, 120, 220, 0.5);
+    }
+
+    .hamburger-lines {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        width: 24px;
+    }
+
+    .hamburger-line {
+        height: 3px;
+        background: #a8c0ff;
+        border-radius: 2px;
+        transition: all 0.3s ease;
+    }
+
+    .menu-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 10px;
+        background: rgba(20, 20, 40, 0.95);
+        border: 1px solid rgba(100, 100, 200, 0.3);
+        border-radius: 8px;
+        padding: 10px 0;
+        min-width: 200px;
+        backdrop-filter: blur(15px);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .hamburger-menu.active .menu-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    .menu-item {
+        padding: 12px 20px;
+        color: #a8c0ff;
+        text-decoration: none;
+        display: block;
+        transition: all 0.3s ease;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        font-size: 1rem;
+    }
+
+    .menu-item:hover {
+        background: rgba(80, 80, 200, 0.3);
+        color: #c2d0ff;
+    }
+
+    .turn-indicator {
+        text-align: center;
+        padding: 15px;
+        margin-bottom: 20px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(100, 100, 200, 0.3);
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .current-turn {
+        background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .player-area h3 {
+        color: #e2e8ff;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    /* Modal Styles */
+    .game-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 2000;
+        backdrop-filter: blur(5px);
+    }
+
+    .game-modal-content {
+        background: rgba(20, 20, 40, 0.95);
+        border: 1px solid rgba(100, 100, 200, 0.3);
+        border-radius: 15px;
+        padding: 2rem;
+        width: 90%;
+        max-width: 500px; /* Fixed modal width */
+        max-height: 80vh;
+        overflow-y: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        backdrop-filter: blur(15px);
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        color: #a8c0ff;
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .close-modal:hover {
+        color: #c2d0ff;
+    }
+
+    /* Help Content Styles */
+    .help-section {
+        margin-bottom: 2rem;
+    }
+
+    .help-section h3 {
+        color: #e2e8ff;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid rgba(100, 100, 200, 0.3);
+        padding-bottom: 0.5rem;
+    }
+
+    .help-section p {
+        color: #c2a8ff;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .help-section ul {
+        color: #c2a8ff;
+        padding-left: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .help-section li {
+        margin-bottom: 0.5rem;
+        line-height: 1.5;
+    }
+
+    .help-section strong {
+        color: #a8c0ff;
+    }
+
+    /* Save button feedback */
+    .btn-saved {
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%) !important;
+        transform: scale(0.95);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .game-board {
+            padding: 10px;
+            width: 98%;
+        }
+        
+        .game-controls .btn {
+            min-width: 140px;
+            padding: 10px 15px;
+            font-size: 0.9rem;
+        }
+        
+        .card {
+            width: 100px;
+            height: 140px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
+<!-- Settings Modal -->
+<div class="game-modal" id="game-settings-modal">
+    <div class="game-modal-content">
+        <button class="close-modal" id="close-settings">&times;</button>
+        <h2 class="text-center mb-4" style="color: #e2e8ff;">Game Settings</h2>
+        <form id="game-settings-form">
+            <div class="mb-4">
+                <label class="form-label">Music Volume: <span id="game-music-display">50%</span></label>
+                <input type="range" class="form-range" id="game-music-volume" min="0" max="100" value="50">
+            </div>
+            <div class="mb-4">
+                <label class="form-label">Sound Effects: <span id="game-sfx-display">70%</span></label>
+                <input type="range" class="form-range" id="game-sfx-volume" min="0" max="100" value="70">
+            </div>
+            <div class="form-check form-switch mb-4">
+                <input class="form-check-input" type="checkbox" id="game-fullscreen-toggle">
+                <label class="form-check-label" style="color: #e2e8ff;">
+                    Fullscreen Mode
+                </label>
+            </div>
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary" id="game-save-settings">Save Settings</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Help Modal -->
+<div class="game-modal" id="game-help-modal">
+    <div class="game-modal-content">
+        <button class="close-modal" id="close-help">&times;</button>
+        <h2 class="text-center mb-4" style="color: #e2e8ff;">How to Play Pantheon</h2>
+        
+        <div class="help-section">
+            <h3>🎯 Game Objective</h3>
+            <p>Be the first player to complete three cards that all share the same element.</p>
+        </div>
+
+        <div class="help-section">
+            <h3>⚡ Elements</h3>
+            <ul>
+                <li><strong>Earth</strong> - Grounded and stable challenges</li>
+                <li><strong>Air</strong> - Quick and agile challenges</li>
+                <li><strong>Fire</strong> - Intense and powerful challenges</li>
+                <li><strong>Water</strong> - Fluid and adaptive challenges</li>
+            </ul>
+        </div>
+
+        <div class="help-section">
+            <h3>🃏 Setup</h3>
+            <ul>
+                <li>Shuffle all 28 cards (24 Zodiac + 4 Retrograde)</li>
+                <li>Each player draws 3 Active Cards</li>
+                <li>Player with closest birthday goes first</li>
+            </ul>
+        </div>
+
+        <div class="help-section">
+            <h3>🔄 Turn Actions</h3>
+            <ul>
+                <li><strong>Attempt Challenge:</strong> Try to complete an Active Card's challenge. If successful, move it to Completed. If failed, apply its disadvantage.</li>
+                <li><strong>Forsake & Draw:</strong> Discard an Active Card and draw a new one from the deck.</li>
+                <li><strong>Trade:</strong> Exchange cards with another player.</li>
+                <li><strong>Skip Turn:</strong> Pass your turn (cannot skip twice in a row).</li>
+            </ul>
+        </div>
+
+        <div class="help-section">
+            <h3>🔄 Retrograde Cards</h3>
+            <p>Once per game, you can use a Retrograde card to return all completed cards to the deck. This can create dramatic comebacks!</p>
+        </div>
+
+        <div class="help-section">
+            <h3>🏆 Winning the Game</h3>
+            <p>The first player to complete three cards of the same element immediately wins the game!</p>
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-primary" id="close-help-btn">Got It!</button>
+        </div>
+    </div>
+</div>
+
+<!-- Hamburger Menu -->
+<div class="hamburger-menu" id="hamburger-menu">
+    <div class="hamburger-lines">
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+    </div>
+    <div class="menu-dropdown">
+        <a href="{% url 'home' %}" class="menu-item" id="menu-home">
+            <i class="fas fa-home"></i> Main Menu
+        </a>
+        <button class="menu-item" id="menu-settings">
+            <i class="fas fa-cog"></i> Settings
+        </button>
+        <button class="menu-item" id="menu-help">
+            <i class="fas fa-question-circle"></i> Help
+        </button>
+    </div>
+</div>
+
 <div class="game-board">
+    <!-- Turn Indicator -->
+    <div class="turn-indicator">
+        Current Turn: <span class="current-turn" id="current-player">Player 1</span>
+    </div>
+
     <div class="row">
         <!-- Player 2 Area -->
         <div class="col-12 mb-4">
             <div class="player-area player-2">
                 <h3>Player 2</h3>
-                <div class="active-cards">
-                    <!-- Active cards will be dynamically added here -->
+                <div class="active-cards" id="player2-active">
+                    <div class="card active">Card 1</div>
+                    <div class="card active">Card 2</div>
+                    <div class="card active">Card 3</div>
                 </div>
-                <div class="completed-cards">
+                <div class="completed-cards" id="player2-completed">
                     <!-- Completed cards will be shown here -->
                 </div>
             </div>
@@ -21,7 +474,9 @@
         <!-- Game Controls -->
         <div class="col-12 mb-4">
             <div class="game-controls text-center">
-                <button class="btn btn-primary" id="draw-card">Draw Card</button>
+                <button class="btn btn-primary" id="attempt-challenge">Attempt Challenge</button>
+                <button class="btn btn-primary" id="draw-card">Forsake & Draw</button>
+                <button class="btn btn-primary" id="trade">Trade</button>
                 <button class="btn btn-warning" id="retrograde">Use Retrograde</button>
                 <button class="btn btn-secondary" id="skip-turn">Skip Turn</button>
             </div>
@@ -31,10 +486,12 @@
         <div class="col-12">
             <div class="player-area player-1">
                 <h3>Player 1</h3>
-                <div class="active-cards">
-                    <!-- Active cards will be dynamically added here -->
+                <div class="active-cards" id="player1-active">
+                    <div class="card active">Card 1</div>
+                    <div class="card active">Card 2</div>
+                    <div class="card active">Card 3</div>
                 </div>
-                <div class="completed-cards">
+                <div class="completed-cards" id="player1-completed">
                     <!-- Completed cards will be shown here -->
                 </div>
             </div>
@@ -43,39 +500,309 @@
 </div>
 {% endblock %}
 
-{% block extra_css %}
-<style>
-    .player-area {
-        padding: 20px;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        margin-bottom: 20px;
-    }
-
-    .active-cards, .completed-cards {
-        display: flex;
-        gap: 10px;
-        margin-top: 10px;
-        min-height: 150px;
-        padding: 10px;
-        background: rgba(0,0,0,0.05);
-        border-radius: 4px;
-    }
-
-    .game-controls {
-        padding: 20px;
-        background: #f8f9fa;
-        border-radius: 8px;
-    }
-
-    .game-controls button {
-        margin: 0 10px;
-    }
-</style>
-{% endblock %}
-
 {% block extra_js %}
+<script src="https://kit.fontawesome.com/a81368914c.js" crossorigin="anonymous"></script>
 <script>
-    // Game logic will be added here
+    // FULLSCREEN RESTORATION
+    document.addEventListener('DOMContentLoaded', function() {
+        // Enter fullscreen immediately when game loads if it was enabled
+        const settings = JSON.parse(localStorage.getItem('pantheonSettings') || '{}');
+        if (settings.fullscreen && !document.fullscreenElement) {
+            setTimeout(() => {
+                document.documentElement.requestFullscreen().catch(console.error);
+            }, 100);
+        }
+
+        // Initialize hamburger menu and modals
+        initializeHamburgerMenu();
+        
+        // Initialize game
+        initializeGame();
+        
+        // Load settings
+        loadGameSettings();
+    });
+
+    function initializeHamburgerMenu() {
+        const hamburgerMenu = document.getElementById('hamburger-menu');
+        const menuHome = document.getElementById('menu-home');
+        const menuSettings = document.getElementById('menu-settings');
+        const menuHelp = document.getElementById('menu-help');
+        const menuFullscreen = document.getElementById('menu-fullscreen');
+        
+        const settingsModal = document.getElementById('game-settings-modal');
+        const helpModal = document.getElementById('game-help-modal');
+        
+        const closeSettings = document.getElementById('close-settings');
+        const closeHelp = document.getElementById('close-help');
+        const closeHelpBtn = document.getElementById('close-help-btn');
+        
+        const gameSettingsForm = document.getElementById('game-settings-form');
+        const gameSaveSettingsBtn = document.getElementById('game-save-settings');
+
+        // Toggle menu
+        hamburgerMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+            this.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!hamburgerMenu.contains(e.target)) {
+                hamburgerMenu.classList.remove('active');
+            }
+        });
+
+        // Menu item handlers
+        menuHome.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = "{% url 'home' %}";
+        });
+
+        menuSettings.addEventListener('click', function() {
+            loadGameSettings();
+            settingsModal.style.display = 'block';
+            hamburgerMenu.classList.remove('active');
+        });
+
+        menuHelp.addEventListener('click', function() {
+            helpModal.style.display = 'block';
+            hamburgerMenu.classList.remove('active');
+        });
+
+        menuFullscreen.addEventListener('click', function() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(console.error);
+            } else {
+                document.exitFullscreen();
+            }
+            hamburgerMenu.classList.remove('active');
+        });
+
+        // Settings modal handlers
+        closeSettings.addEventListener('click', function() {
+            settingsModal.style.display = 'none';
+        });
+
+        gameSettingsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveGameSettings();
+            // Show visual feedback
+            gameSaveSettingsBtn.classList.add('btn-saved');
+            gameSaveSettingsBtn.textContent = '✓ Saved!';
+            setTimeout(() => {
+                gameSaveSettingsBtn.classList.remove('btn-saved');
+                gameSaveSettingsBtn.textContent = 'Save Settings';
+                settingsModal.style.display = 'none';
+            }, 1000);
+        });
+
+        // Help modal handlers
+        closeHelp.addEventListener('click', function() {
+            helpModal.style.display = 'none';
+        });
+
+        closeHelpBtn.addEventListener('click', function() {
+            helpModal.style.display = 'none';
+        });
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+            if (e.target === helpModal) {
+                helpModal.style.display = 'none';
+            }
+        });
+
+        // Close modals with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                settingsModal.style.display = 'none';
+                helpModal.style.display = 'none';
+            }
+        });
+
+        // Update volume displays in real-time
+        document.getElementById('game-music-volume').addEventListener('input', function() {
+            document.getElementById('game-music-display').textContent = this.value + '%';
+        });
+
+        document.getElementById('game-sfx-volume').addEventListener('input', function() {
+            document.getElementById('game-sfx-display').textContent = this.value + '%';
+        });
+
+        // Handle fullscreen toggle in settings
+        document.getElementById('game-fullscreen-toggle').addEventListener('change', function() {
+            if (this.checked && !document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {
+                    this.checked = false;
+                });
+            } else if (!this.checked && document.fullscreenElement) {
+                document.exitFullscreen();
+            }
+        });
+    }
+
+    function saveGameSettings() {
+        const settings = {
+            musicVolume: document.getElementById('game-music-volume').value,
+            sfxVolume: document.getElementById('game-sfx-volume').value,
+            fullscreen: document.getElementById('game-fullscreen-toggle').checked
+        };
+        
+        localStorage.setItem('pantheonSettings', JSON.stringify(settings));
+        
+        // Handle fullscreen change immediately
+        if (settings.fullscreen && !document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(console.error);
+        } else if (!settings.fullscreen && document.fullscreenElement) {
+            document.exitFullscreen();
+        }
+    }
+
+    function loadGameSettings() {
+        const savedSettings = localStorage.getItem('pantheonSettings');
+        if (savedSettings) {
+            const settings = JSON.parse(savedSettings);
+            
+            document.getElementById('game-music-volume').value = settings.musicVolume || 50;
+            document.getElementById('game-music-display').textContent = (settings.musicVolume || 50) + '%';
+            document.getElementById('game-sfx-volume').value = settings.sfxVolume || 70;
+            document.getElementById('game-sfx-display').textContent = (settings.sfxVolume || 70) + '%';
+            document.getElementById('game-fullscreen-toggle').checked = settings.fullscreen || false;
+        }
+    }
+
+    // Update fullscreen toggle based on actual state
+    document.addEventListener('fullscreenchange', function() {
+        const isFullscreen = !!document.fullscreenElement;
+        if (document.getElementById('game-fullscreen-toggle')) {
+            document.getElementById('game-fullscreen-toggle').checked = isFullscreen;
+        }
+        // Save the actual state
+        const settings = JSON.parse(localStorage.getItem('pantheonSettings') || '{}');
+        settings.fullscreen = isFullscreen;
+        localStorage.setItem('pantheonSettings', JSON.stringify(settings));
+    });
+
+    // GAME LOGIC
+    function initializeGame() {
+        let gameState = {
+            currentPlayer: 1,
+            players: {
+                1: { activeCards: 3, completedCards: [], usedRetrograde: false },
+                2: { activeCards: 3, completedCards: [], usedRetrograde: false }
+            }
+        };
+
+        const currentPlayerElement = document.getElementById('current-player');
+        const attemptChallengeBtn = document.getElementById('attempt-challenge');
+        const drawCardBtn = document.getElementById('draw-card');
+        const tradeBtn = document.getElementById('trade');
+        const retrogradeBtn = document.getElementById('retrograde');
+        const skipTurnBtn = document.getElementById('skip-turn');
+
+        attemptChallengeBtn.addEventListener('click', attemptChallenge);
+        drawCardBtn.addEventListener('click', forsakeAndDraw);
+        tradeBtn.addEventListener('click', initiateTrade);
+        retrogradeBtn.addEventListener('click', useRetrograde);
+        skipTurnBtn.addEventListener('click', skipTurn);
+
+        function attemptChallenge() {
+            const success = Math.random() > 0.5;
+            if (success) {
+                alert(`Player ${gameState.currentPlayer} completed a challenge!`);
+                gameState.players[gameState.currentPlayer].completedCards.push('Completed Card');
+                gameState.players[gameState.currentPlayer].activeCards--;
+                checkWinCondition();
+            } else {
+                alert(`Player ${gameState.currentPlayer} failed the challenge!`);
+            }
+            updateGameDisplay();
+        }
+
+        function forsakeAndDraw() {
+            if (gameState.players[gameState.currentPlayer].activeCards > 0) {
+                alert(`Player ${gameState.currentPlayer} discarded a card and drew a new one.`);
+                updateGameDisplay();
+            } else {
+                alert("No active cards to discard!");
+            }
+        }
+
+        function initiateTrade() {
+            alert("Trade initiated!");
+        }
+
+        function useRetrograde() {
+            if (!gameState.players[gameState.currentPlayer].usedRetrograde) {
+                if (confirm("Use Retrograde? This will return all completed cards to the deck.")) {
+                    gameState.players[1].completedCards = [];
+                    gameState.players[2].completedCards = [];
+                    gameState.players[gameState.currentPlayer].usedRetrograde = true;
+                    alert("Retrograde activated!");
+                    updateGameDisplay();
+                }
+            } else {
+                alert("You have already used your Retrograde this game!");
+            }
+        }
+
+        function skipTurn() {
+            alert(`Player ${gameState.currentPlayer} skipped their turn.`);
+            nextTurn();
+        }
+
+        function nextTurn() {
+            gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
+            updateGameDisplay();
+        }
+
+        function checkWinCondition() {
+            const p1Completed = gameState.players[1].completedCards.length;
+            const p2Completed = gameState.players[2].completedCards.length;
+            
+            if (p1Completed >= 3) {
+                alert("Player 1 wins!");
+                resetGame();
+            } else if (p2Completed >= 3) {
+                alert("Player 2 wins!");
+                resetGame();
+            }
+        }
+
+        function updateGameDisplay() {
+            currentPlayerElement.textContent = `Player ${gameState.currentPlayer}`;
+            
+            document.getElementById('player1-active').innerHTML = 
+                Array(gameState.players[1].activeCards).fill('<div class="card active">Active Card</div>').join('');
+            
+            document.getElementById('player2-active').innerHTML = 
+                Array(gameState.players[2].activeCards).fill('<div class="card active">Active Card</div>').join('');
+            
+            document.getElementById('player1-completed').innerHTML = 
+                Array(gameState.players[1].completedCards.length).fill('<div class="card completed">Completed</div>').join('');
+            
+            document.getElementById('player2-completed').innerHTML = 
+                Array(gameState.players[2].completedCards.length).fill('<div class="card completed">Completed</div>').join('');
+            
+            retrogradeBtn.disabled = gameState.players[gameState.currentPlayer].usedRetrograde;
+        }
+
+        function resetGame() {
+            gameState = {
+                currentPlayer: 1,
+                players: {
+                    1: { activeCards: 3, completedCards: [], usedRetrograde: false },
+                    2: { activeCards: 3, completedCards: [], usedRetrograde: false }
+                }
+            };
+            updateGameDisplay();
+        }
+
+        updateGameDisplay();
+    }
 </script>
 {% endblock %}

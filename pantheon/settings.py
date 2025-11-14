@@ -79,13 +79,10 @@ WSGI_APPLICATION = 'pantheon.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-         'NAME': 'yourdbname',        
-        'USER': 'root',           
-        'PASSWORD': '2101776Mata',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
 
 
 # Password validation
