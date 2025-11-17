@@ -41,7 +41,7 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(100, 100, 200, 0.3);
         width: 90%;
-        max-width: 800px; /* Fixed maximum width */
+        max-width: 800px;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
     
@@ -223,18 +223,12 @@
             <div class="settings-container">
                 <h2 class="text-center mb-4" style="color: #e2e8ff;">Game Settings</h2>
                 <div class="mb-4">
-                    <label class="form-label">Music Volume: <span id="game-music-display">50%</span></label>
-                    <input type="range" class="form-range" id="game-music-volume" min="0" max="100" value="50">
+                    <label class="form-label">Music Volume: <span id="music-display">50%</span></label>
+                    <input type="range" class="form-range" id="music-volume" min="0" max="100" value="50">
                 </div>
                 <div class="mb-4">
-                    <label class="form-label">Sound Effects: <span id="game-sfx-display">70%</span></label>
-                    <input type="range" class="form-range" id="game-sfx-volume" min="0" max="100" value="70">
-                </div>
-                <div class="form-check form-switch mb-4">
-                    <input class="form-check-input home-fullscreen-toggle" type="checkbox">
-                    <label class="form-check-label" style="color: #e2e8ff;">
-                        Fullscreen Mode
-                    </label>
+                    <label class="form-label">Sound Effects: <span id="sfx-display">70%</span></label>
+                    <input type="range" class="form-range" id="sfx-volume" min="0" max="100" value="70">
                 </div>
                 <div class="text-center">
                     <button class="btn btn-primary" id="save-home-settings">Save Settings</button>
@@ -301,26 +295,17 @@
     document.addEventListener('DOMContentLoaded', function() {
         const startGameBtn = document.getElementById('start-game-btn');
         const saveHomeSettingsBtn = document.getElementById('save-home-settings');
+        const musicVolume = document.getElementById('music-volume');
+        const sfxVolume = document.getElementById('sfx-volume');
+        const musicDisplay = document.getElementById('music-display');
+        const sfxDisplay = document.getElementById('sfx-display');
         
         // Load saved settings
         loadSettings();
         
-        // Handle start game button
+        // Handle start game button - SIMPLIFIED
         startGameBtn.addEventListener('click', function() {
-            const settings = JSON.parse(localStorage.getItem('pantheonSettings') || '{}');
-            const wantsFullscreen = settings.fullscreen || false;
-            
-            if (wantsFullscreen && !document.fullscreenElement) {
-                document.documentElement.requestFullscreen().then(() => {
-                    setTimeout(() => {
-                        window.location.href = "{% url 'game' %}";
-                    }, 100);
-                }).catch(() => {
-                    window.location.href = "{% url 'game' %}";
-                });
-            } else {
-                window.location.href = "{% url 'game' %}";
-            }
+            window.location.href = "{% url 'game' %}";
         });
         
         // Home tab settings
@@ -335,30 +320,18 @@
         });
         
         // Update volume displays
-        document.querySelector('.home-music-volume').addEventListener('input', function() {
-            document.getElementById('music-display').textContent = this.value + '%';
+        musicVolume.addEventListener('input', function() {
+            musicDisplay.textContent = this.value + '%';
         });
         
-        document.querySelector('.home-sfx-volume').addEventListener('input', function() {
-            document.getElementById('sfx-display').textContent = this.value + '%';
-        });
-        
-        // Handle fullscreen toggle
-        document.querySelector('.home-fullscreen-toggle').addEventListener('change', function() {
-            if (this.checked && !document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {
-                    this.checked = false;
-                });
-            } else if (!this.checked && document.fullscreenElement) {
-                document.exitFullscreen();
-            }
+        sfxVolume.addEventListener('input', function() {
+            sfxDisplay.textContent = this.value + '%';
         });
         
         function saveSettings() {
             const settings = {
-                musicVolume: document.querySelector('.home-music-volume').value,
-                sfxVolume: document.querySelector('.home-sfx-volume').value,
-                fullscreen: document.querySelector('.home-fullscreen-toggle').checked
+                musicVolume: musicVolume.value,
+                sfxVolume: sfxVolume.value
             };
             localStorage.setItem('pantheonSettings', JSON.stringify(settings));
         }
@@ -366,25 +339,28 @@
         function loadSettings() {
             const savedSettings = localStorage.getItem('pantheonSettings');
             if (savedSettings) {
-                const settings = JSON.parse(savedSettings);
-                document.querySelector('.home-music-volume').value = settings.musicVolume || 50;
-                document.getElementById('music-display').textContent = (settings.musicVolume || 50) + '%';
-                document.querySelector('.home-sfx-volume').value = settings.sfxVolume || 70;
-                document.getElementById('sfx-display').textContent = (settings.sfxVolume || 70) + '%';
-                document.querySelector('.home-fullscreen-toggle').checked = settings.fullscreen || false;
+                try {
+                    const settings = JSON.parse(savedSettings);
+                    musicVolume.value = settings.musicVolume || 50;
+                    musicDisplay.textContent = (settings.musicVolume || 50) + '%';
+                    sfxVolume.value = settings.sfxVolume || 70;
+                    sfxDisplay.textContent = (settings.sfxVolume || 70) + '%';
+                } catch (e) {
+                    console.error('Error loading settings:', e);
+                    resetToDefaultSettings();
+                }
+            } else {
+                resetToDefaultSettings();
             }
         }
         
-        // Update fullscreen toggle based on actual state
-        document.addEventListener('fullscreenchange', function() {
-            document.querySelector('.home-fullscreen-toggle').checked = !!document.fullscreenElement;
-            const settings = JSON.parse(localStorage.getItem('pantheonSettings') || '{}');
-            settings.fullscreen = !!document.fullscreenElement;
-            localStorage.setItem('pantheonSettings', JSON.stringify(settings));
-        });
-        
-        // Initialize
-        loadSettings();
+        function resetToDefaultSettings() {
+            musicVolume.value = 50;
+            musicDisplay.textContent = '50%';
+            sfxVolume.value = 70;
+            sfxDisplay.textContent = '70%';
+            saveSettings();
+        }
     });
 </script>
 {% endblock %}
