@@ -263,26 +263,29 @@
             position: relative;
             overflow: hidden;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
         
         .card.earth {
-            background: linear-gradient(135deg, var(--earth) 0%, #A0522D 100%);
+            background-color: #2c1810;
         }
         
         .card.air {
-            background: linear-gradient(135deg, var(--air) 0%, #87CEEB 100%);
+            background-color: #1e3a5f;
         }
         
         .card.fire {
-            background: linear-gradient(135deg, var(--fire) 0%, #FF4500 100%);
+            background-color: #5c1a1a;
         }
         
         .card.water {
-            background: linear-gradient(135deg, var(--water) 0%, #00008B 100%);
+            background-color: #0d3b66;
         }
         
         .card.retrograde {
-            background: linear-gradient(135deg, var(--retrograde) 0%, #a044ff 100%);
+            background-color: #3a1b5f;
         }
         
         .card:hover {
@@ -301,70 +304,12 @@
         }
         
         .card.hidden {
-            background-image: url('images/card_back.png');
-            background-size: cover;
-            background-position: center;
-        }
-        
-        .card.hidden .card-element,
-        .card.hidden .card-name,
-        .card.hidden .card-content {
-            visibility: hidden;
-        }
-
-        .card.retrograde.hidden {
             background-image: url('images/card_back.png') !important;
-        }
-
-        .card-element {
-            font-size: 0.8rem;
-            padding: 3px 10px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.2);
-            margin-bottom: 8px;
+            background-color: #1a1a2e !important;
         }
         
-        .card-name {
-            font-size: 1rem;
-            margin: 8px 0;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-        }
-        
-        .card-content {
-            font-size: 0.75rem;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            width: 100%;
-            gap: 8px;
-            background: rgba(0, 0, 0, 0.6);
-            padding: 10px;
-            border-radius: 8px;
-        }
-        
-        .card-challenge, .card-disadvantage {
-            margin: 0;
-            font-weight: normal;
-            text-align: left;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 8px;
-            border-radius: 6px;
-            line-height: 1.4;
-            min-height: 40px;
-        }
-        
-        .card-challenge::before {
-            content: "Challenge: ";
-            font-weight: bold;
-            color: #a8ffa8;
-        }
-        
-        .card-disadvantage::before {
-            content: "Disadvantage: ";
-            font-weight: bold;
-            color: #ffa8a8;
+        .card.hidden .card-content {
+            display: none;
         }
         
         .game-controls {
@@ -413,6 +358,40 @@
             background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
             color: white;
         }
+
+        .challenge-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .challenge-buttons .btn {
+            min-width: 120px;
+            padding: 12px 24px;
+            font-size: 1rem;
+        }
+
+        .modal-buttons-row {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .card-grid-modal {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+            padding: 10px;
+        }
         
         .deck-area {
             display: flex;
@@ -454,7 +433,14 @@
             color: var(--accent);
             font-size: 1rem;
         }
-        
+
+        .challenge-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
         .action-feedback {
             position: fixed;
             top: 50%;
@@ -643,7 +629,6 @@
     
     <div class="game-container">
         <header class="game-header">
-            <!-- Hamburger Menu -->
             <div class="hamburger-menu" id="hamburger-menu">
                 <div class="bar"></div>
                 <div class="bar"></div>
@@ -665,7 +650,6 @@
             </div>
             
             <div class="players-container">
-                <!-- Player 2 Area -->
                 <div class="player-area player-2">
                     <div class="player-header">
                         <h2 class="player-name">Player 2</h2>
@@ -678,21 +662,16 @@
                     <div class="cards-container">
                         <div class="cards-section">
                             <h3 class="section-title">Active Cards</h3>
-                            <div class="cards-grid" id="player2-active">
-                                <!-- Player 2 active cards will be populated here -->
-                            </div>
+                            <div class="cards-grid" id="player2-active"></div>
                         </div>
                         
                         <div class="cards-section">
                             <h3 class="section-title">Completed Cards</h3>
-                            <div class="cards-grid" id="player2-completed">
-                                <!-- Player 2 completed cards will be populated here -->
-                            </div>
+                            <div class="cards-grid" id="player2-completed"></div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Player 1 Area -->
+
                 <div class="player-area player-1">
                     <div class="player-header">
                         <h2 class="player-name">Player 1</h2>
@@ -705,23 +684,18 @@
                     <div class="cards-container">
                         <div class="cards-section">
                             <h3 class="section-title">Active Cards</h3>
-                            <div class="cards-grid" id="player1-active">
-                                <!-- Player 1 active cards will be populated here -->
-                            </div>
+                            <div class="cards-grid" id="player1-active"></div>
                         </div>
                         
                         <div class="cards-section">
                             <h3 class="section-title">Completed Cards</h3>
-                            <div class="cards-grid" id="player1-completed">
-                                <!-- Player 1 completed cards will be populated here -->
-                            </div>
+                            <div class="cards-grid" id="player1-completed"></div>
                         </div>
                     </div>
                 </div>
             </div>
             
             <div class="game-controls">
-                <!-- Player 2 Controls -->
                 <div class="player-controls">
                     <button class="btn btn-primary" data-player="2" id="attempt-challenge-2">
                         <i class="fas fa-bolt"></i> Attempt Challenge
@@ -732,7 +706,7 @@
                     <button class="btn btn-primary" data-player="2" id="trade-2">
                         <i class="fas fa-exchange-alt"></i> Trade
                     </button>
-                    <button class="btn btn-warning" data-player="2" id="retrograde-2">
+                    <button class="btn btn-warning" data-player="2" id="retrograde-2" disabled>
                         <i class="fas fa-undo"></i> Use Retrograde
                     </button>
                     <button class="btn btn-secondary" data-player="2" id="skip-turn-2">
@@ -740,18 +714,14 @@
                     </button>
                 </div>
                 
-                <!-- Deck Area -->
                 <div class="deck-area">
                     <h3>Deck</h3>
-                    <div class="deck-card" id="deck-card">
-                        <!-- Deck card visual -->
-                    </div>
+                    <div class="deck-card" id="deck-card"></div>
                     <div class="deck-stats">
-                        Cards remaining: <span id="deck-count">26</span>
+                        <span id="deck-count"></span>
                     </div>
                 </div>
                 
-                <!-- Player 1 Controls -->
                 <div class="player-controls">
                     <button class="btn btn-primary" data-player="1" id="attempt-challenge-1">
                         <i class="fas fa-bolt"></i> Attempt Challenge
@@ -762,7 +732,7 @@
                     <button class="btn btn-primary" data-player="1" id="trade-1">
                         <i class="fas fa-exchange-alt"></i> Trade
                     </button>
-                    <button class="btn btn-warning" data-player="1" id="retrograde-1">
+                    <button class="btn btn-warning" data-player="1" id="retrograde-1" disabled>
                         <i class="fas fa-undo"></i> Use Retrograde
                     </button>
                     <button class="btn btn-secondary" data-player="1" id="skip-turn-1">
@@ -773,10 +743,9 @@
         </div>
     </div>
     
-    <!-- Action Feedback -->
     <div class="action-feedback" id="action-feedback"></div>
     
-    <!-- Game Modals -->
+    <!-- Modals -->
     <div class="modal-overlay" id="game-settings-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -855,7 +824,6 @@
         </div>
     </div>
 
-    <!-- Trade Modal -->
     <div class="modal-overlay" id="trade-modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -880,1116 +848,829 @@
         </div>
     </div>
 
-    <!-- Challenge target modal -->
     <div class="modal-overlay" id="challenge-target-modal">
         <div class="modal-content">
-            <button class="close-modal" id="close-challenge-target">&times;</button>
-            <h2 class="text-center">Select Challenge Target</h2>
-            <div id="challenge-target-cards"></div>
-            <div style="text-align:center; margin-top:8px;">
-                <button id="cancel-challenge-target">Cancel</button>
+            <div class="modal-header">
+                <h2 class="modal-title">Select Challenge Target</h2>
+                <button class="close-modal" id="close-challenge-target">&times;</button>
+            </div>
+            <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
+                Choose a card to attempt with Scorpio's power:
+            </p>
+            <div id="challenge-target-cards" class="card-grid-modal"></div>
+            <div class="modal-buttons-row">
+                <button class="btn btn-secondary" id="cancel-challenge-target">Cancel</button>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Complete card data
-        const allCards = [
-            {
-                id: 1,
-                name: "Capricorn",
-                element: "earth",
-                challenge: "Gain a new Earth sign or forsake a Fire sign.",
-                disadvantage: "Must complete challenge by next turn. Otherwise forsake this card."
-            },
-            {
-                id: 2,
-                name: "Taurus",
-                element: "earth",
-                challenge: "Avoid all trades and retrogrades until your next turn.",
-                disadvantage: "If any card is lost, forsake this card."
-            },
-            {
-                id: 3,
-                name: "Virgo",
-                element: "earth",
-                challenge: "Forsake the two active cards and redraw two new cards.",
-                disadvantage: "If both of the drawn cards match elements from the discarded cards, forsake one completed card."
-            },
-            {
-                id: 4,
-                name: "Aries",
-                element: "fire",
-                challenge: "",
-                disadvantage: ""
-            },
-            {
-                id: 5,
-                name: "Gemini",
-                element: "air",
-                challenge: "",
-                disadvantage: ""
-            },
-            {
-                id: 6,
-                name: "Sagittarius",
-                element: "fire",
-                challenge: "",
-                disadvantage: ""
-            },
-            {
-                id: 7,
-                name: "Libra",
-                element: "air",
-                challenge: "Have at least one of each element in your active or completed hand.",
-                disadvantage: "If your total card count is less than 4, forsake this card."
-            },
-            {
-                id: 8,
-                name: "Aquarius",
-                element: "air",
-                challenge: "",
-                disadvantage: ""
-            },
-            {
-                id: 9,
-                name: "Pisces",
-                element: "water",
-                challenge: "",
-                disadvantage: ""
-            },
-            {
-                id: 10,
-                name: "Scorpio",
-                element: "water",
-                challenge: "Complete any active cards challenge.",
-                disadvantage: "If your opponent completes a challenge while this card is being attempted, forsake this card only."
-            },
-            {
-                id: 11,
-                name: "Cancer",
-                element: "water",
-                challenge: "Offer one of your active cards to your opponent.",
-                disadvantage: "If they refuse the trade, forsake this card."
-            },
-            {
-                id: 12,
-                name: "Leo",
-                element: "fire",
-                challenge: "Correctly predict the next element in the pile before the next card is pulled.",
-                disadvantage: "If incorrect, any matching element in your active hand must be forsaken."
-            },
-            {
-                id: 13,
-                name: "Aries",
-                element: "fire",
-                challenge: "",
-                disadvantage: ""
-            },
-            {
-                id: 14,
-                name: "Leo",
-                element: "fire",
-                challenge: "Correctly predict the next element in the pile before the next card is pulled.",
-                disadvantage: "If incorrect, any matching element in your active hand must be forsaken."
-            },
-            {
-                id: 15,
-                name: "Sagittarius",
-                element: "fire",
-                challenge: "",
-                disadvantage: ""
-            },
-            {
-                id: 16,
-                name: "Scorpio",
-                element: "water",
-                challenge: "Complete any active cards challenge.",
-                disadvantage: "If your opponent completes a challenge while this card is active, forsake this card."
-            },
-            {
-                id: 17,
-                name: "Gemini",
-                element: "air",
-                challenge: "",
-                disadvantage: ""
-            },
-            {
-                id: 18,
-                name: "Libra",
-                element: "air",
-                challenge: "Have at least one of each element in your active or completed hand.",
-                disadvantage: "If your total card count is less than 4, forsake this card."
-            },
-            {
-                id: 19,
-                name: "Cancer",
-                element: "water",
-                challenge: "Offer one of your active cards to your opponent.",
-                disadvantage: "If they refuse the trade, forsake this card."
-            },
-            {
-                id: 20,
-                name: "Scorpio",
-                element: "water",
-                challenge: "Complete any active cards challenge.",
-                disadvantage: "If your opponent completes a challenge while this card is active, forsake this card."
-            },
-            {
-                id: 21,
-                name: "Pisces",
-                element: "water",
-                challenge: "",
-                disadvantage: ""
-            },
-            {
-                id: 22,
-                name: "Aquarius",
-                element: "air",
-                challenge: "",
-                disadvantage: ""
-            },
-            {
-                id: 23,
-                name: "Virgo",
-                element: "earth",
-                challenge: "Forsake the other active cards and redraw two new cards.",
-                disadvantage: "If both of the drawn cards match elements from the previous hand, forsake one completed card."
-            },
-            {
-                id: 24,
-                name: "Taurus",
-                element: "earth",
-                challenge: "Avoid all trades and retrogrades until your next turn.",
-                disadvantage: "If any card is lost, forsake this card."
-            },
-            {
-                id: 25,
-                name: "Retrograde",
-                element: "retrograde",
-                challenge: "",
-                disadvantage: ""
-            },
-            {
-                id: 26,
-                name: "Retrograde",
-                element: "retrograde",
-                challenge: "",
-                disadvantage: ""
-            },
-        ];
-
-        // Game state
-        let gameState;
-        let challengeSourceCard = null;
-        let virgoState = null;
-
-        // Utility functions
-        function shuffleDeck(deck) {
-            for (let i = deck.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [deck[i], deck[j]] = [deck[j], deck[i]];
-            }
+    const zodiacCards = [
+        {
+            name: "Capricorn",
+            element: "earth",
+            challenge: "Gain a new Earth sign or forsake a Fire sign.",
+            disadvantage: "Must complete challenge by next turn. Otherwise forsake this card."
+        },
+        {
+            name: "Taurus",
+            element: "earth",
+            challenge: "Avoid all trades and retrogrades until your next turn.",
+            disadvantage: "If any card is lost, forsake this card."
+        },
+        {
+            name: "Virgo",
+            element: "earth",
+            challenge: "Forsake the two active cards and redraw two new cards.",
+            disadvantage: "If both of the drawn cards match elements from the discarded cards, forsake one completed card."
+        },
+        {
+            name: "Aries",
+            element: "fire",
+            challenge: "Forsake each card but this one until you have two new cards.",
+            disadvantage: "If you redraw one of the cards you forsake, forsake this card."
+        },
+        {
+            name: "Gemini",
+            element: "air",
+            challenge: "Copy each move your opponent does for two turns.",
+            disadvantage: "Forsake all active cards if you fail this challenge."
+        },
+        {
+            name: "Sagittarius",
+            element: "fire",
+            challenge: "Let your opponent pick a card from your deck to trade.",
+            disadvantage: "If this card is taken, challenge must be recompleted."
+        },
+        {
+            name: "Libra",
+            element: "air",
+            challenge: "Have at least one of each element in your active or completed hand.",
+            disadvantage: "If your total card count is less than 4, forsake this card."
+        },
+        {
+            name: "Aquarius",
+            element: "air",
+            challenge: "Gain a new air sign or forsake a water sign.",
+            disadvantage: "Must complete challenge by next turn. Otherwise, Forsake this card."
+        },
+        {
+            name: "Pisces",
+            element: "water",
+            challenge: "Keep this card in your active hand for one turn.",
+            disadvantage: "All active cards are revealed to your opponent."
+        },
+        {
+            name: "Scorpio",
+            element: "water",
+            challenge: "Complete any active cards challenge.",
+            disadvantage: "If your opponent completes a challenge while this card is being attempted, forsake this card only."
+        },
+        {
+            name: "Cancer",
+            element: "water",
+            challenge: "Offer one of your active cards to your opponent.",
+            disadvantage: "If they refuse the trade, forsake this card."
+        },
+        {
+            name: "Leo",
+            element: "fire",
+            challenge: "Correctly predict the next element in the pile before the next card is pulled.",
+            disadvantage: "If incorrect, any matching element in your active hand must be forsaken."
         }
+    ];
 
-        function refillToThree(state, playerId) {
-            const player = state.players[playerId];
-            const currentCardNames = new Set(player.activeCards.map(c => c.name));
+    const allCards = [];
+    let cardId = 1;
 
-            while (player.activeCards.length < 3 && (state.deck.length > 0 || state.discardPile.length > 0)) {
-                if (state.deck.length === 0) {
-                    reshuffleDiscardIntoDeck(state);
-                }
-                if (state.deck.length === 0) break;
-
-                const newCard = state.deck.pop();
-
-                if (!currentCardNames.has(newCard.name)) {
-                    player.activeCards.push(newCard);
-                    currentCardNames.add(newCard.name);
-                } else {
-                    state.discardPile.push(newCard);
-                }
-            }
-            updatePlayerCounts();
-        }
-
-        function reshuffleDiscardIntoDeck(state) {
-            if (state.discardPile.length === 0) return;
-            state.deck.push(...state.discardPile);
-            state.discardPile = [];
-            shuffleDeck(state.deck);
-        }
-
-        function showActionFeedback(message, isSuccess = true) {
-            const feedback = document.getElementById('action-feedback');
-            feedback.textContent = message;
-            feedback.style.borderColor = isSuccess ? '#4CAF50' : '#FF5722';
-            feedback.style.display = 'block';
-
-            setTimeout(() => {
-                feedback.style.display = 'none';
-            }, 1800);
-        }
-
-        function updatePlayerCounts() {
-            document.getElementById('player1-active-count').textContent = gameState.players[1].activeCards.length;
-            document.getElementById('player1-completed-count').textContent = gameState.players[1].completedCards.length;
-            document.getElementById('player2-active-count').textContent = gameState.players[2].activeCards.length;
-            document.getElementById('player2-completed-count').textContent = gameState.players[2].completedCards.length;
-        }
-
-        // Initialize the game
-        function initializeGame() {
-            gameState = {
-                currentPlayer: 1,
-                players: {
-                    1: { 
-                        activeCards: [], 
-                        completedCards: [], 
-                        usedRetrograde: false,
-                        selectedCard: null,
-                        skipNextTurn: false,
-                        taurusPending: false,
-                        taurusPendingId: null,
-                        taurusSnapshot: null
-                    },
-                    2: { 
-                        activeCards: [], 
-                        completedCards: [], 
-                        usedRetrograde: false,
-                        selectedCard: null,
-                        skipNextTurn: false,
-                        taurusPending: false,
-                        taurusPendingId: null,
-                        taurusSnapshot: null
-                    }
-                },
-                deck: [...allCards],
-                discardPile: [],
-                tradeOffer: null
-            };
-
-            // Remove duplicate cards from initial deal
-            const usedCardIds = new Set();
-            shuffleDeck(gameState.deck);
-
-            // Deal initial cards ensuring no duplicates
-            for (let i = 0; i < 3; i++) {
-                if (gameState.deck.length > 0) {
-                    const card = gameState.deck.pop();
-                    if (!usedCardIds.has(card.id)) {
-                        gameState.players[1].activeCards.push(card);
-                        usedCardIds.add(card.id);
-                    }
-                }
-                if (gameState.deck.length > 0) {
-                    const card = gameState.deck.pop();
-                    if (!usedCardIds.has(card.id)) {
-                        gameState.players[2].activeCards.push(card);
-                        usedCardIds.add(card.id);
-                    }
-                }
-            }
-            updateGameDisplay();
-            setupEventListeners();
-        }
-
-        function setupEventListeners() {
-            // Player 1 controls
-            document.getElementById('attempt-challenge-1').addEventListener('click', function() { attemptChallenge(1); });
-            document.getElementById('draw-card-1').addEventListener('click', function() { forsakeAndDraw(1); });
-            document.getElementById('trade-1').addEventListener('click', function() { initiateTrade(1); });
-            document.getElementById('retrograde-1').addEventListener('click', function() { useRetrograde(1); });
-            document.getElementById('skip-turn-1').addEventListener('click', function() { skipTurn(1); });
-
-            // Player 2 controls  
-            document.getElementById('attempt-challenge-2').addEventListener('click', function() { attemptChallenge(2); });
-            document.getElementById('draw-card-2').addEventListener('click', function() { forsakeAndDraw(2); });
-            document.getElementById('trade-2').addEventListener('click', function() { initiateTrade(2); });
-            document.getElementById('retrograde-2').addEventListener('click', function() { useRetrograde(2); });
-            document.getElementById('skip-turn-2').addEventListener('click', function() { skipTurn(2); });
-
-            // Common controls
-            document.getElementById('deck-card').addEventListener('click', drawFromDeck);
-
-            // Modal controls
-            document.getElementById('close-trade-modal').addEventListener('click', closeTradeModal);
-            document.getElementById('trade-cancel-btn').addEventListener('click', cancelTrade);
-            document.getElementById('trade-accept-btn').addEventListener('click', tradeAcceptHandler);
-            document.getElementById('trade-decline-btn').addEventListener('click', tradeDeclineHandler);
-
-            document.getElementById('close-challenge-target').addEventListener('click', closeChallengeTargetModal);
-            document.getElementById('cancel-challenge-target').addEventListener('click', closeChallengeTargetModal);
-
-            document.getElementById('rematch-btn').addEventListener('click', function() {
-                document.getElementById('winner-modal').style.display = 'none';
-                initializeGame();
+    for (let i = 0; i < 2; i++) {
+        zodiacCards.forEach(zodiacCard => {
+            allCards.push({
+                ...zodiacCard,
+                id: cardId++,
+                image: `images/${zodiacCard.name.toLowerCase()}.png`
             });
+        });
+    }
 
-            // Hamburger menu - REMOVE THIS LINE
-            // initializeHamburgerMenu();
+    allCards.push({
+        id: cardId++,
+        name: "Retrograde",
+        element: "retrograde",
+        challenge: "",
+        disadvantage: "",
+        image: "images/retrograde.png"
+    });
+    allCards.push({
+        id: cardId++,
+        name: "Retrograde",
+        element: "retrograde",
+        challenge: "",
+        disadvantage: "",
+        image: "images/retrograde.png"
+    });
+
+
+    let gameState = null;
+    let scorpioAttempt = null; 
+
+    function shuffleDeck(deck) {
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        return deck;
+    }
+
+    function refillToThree(state, playerId) {
+        const player = state.players[playerId];
+        while (player.activeCards.length < 3) {
+            if (state.deck.length === 0) {
+                reshuffleDiscardIntoDeck(state);
+            }
+
+            if (state.deck.length === 0) break;
+
+            const newCard = drawUniqueCard(state, player);
+            if (newCard) {
+                player.activeCards.push(newCard);
+            } else {
+                break; 
+            }
+        }
+        updatePlayerCounts();
+    }
+
+    function drawUniqueCard(state, player) {
+        if (state.deck.length === 0 && state.discardPile.length > 0) {
+            reshuffleDiscardIntoDeck(state);
         }
         
-        function initializeHamburgerMenu() {    
-            const hamburgerMenu = document.getElementById('hamburger-menu');
-            const menu = document.getElementById('menu');
-            const menuHome = document.getElementById('menu-home');
-            const menuSettings = document.getElementById('menu-settings');
-            const menuHelp = document.getElementById('menu-help');
-
-            const settingsModal = document.getElementById('game-settings-modal');
-            const helpModal = document.getElementById('game-help-modal');
-
-            const closeSettings = document.getElementById('close-settings');
-            const closeHelp = document.getElementById('close-help');
-            const closeHelpBtn = document.getElementById('close-help-btn');
-
-            const gameSettingsForm = document.getElementById('game-settings-form');
-            const gameSaveSettingsBtn = document.getElementById('game-save-settings');
-
-            // Toggle menu when hamburger is clicked
-            hamburgerMenu.addEventListener('click', function(e) {
-                e.stopPropagation();
-                menu.classList.toggle('active');
-            });
-
-            // Close menu when clicking outside
-            document.addEventListener('click', function(e) {
-                if (!menu.contains(e.target) && !hamburgerMenu.contains(e.target)) {
-                    menu.classList.remove('active');
-                }
-            });
-
-            // Menu item click handlers
-            menuHome.addEventListener('click', function(e) {
-                e.preventDefault();
-                window.location.href = "index.html";
-                menu.classList.remove('active');
-            });
-
-            menuSettings.addEventListener('click', function() {
-                loadGameSettings();
-                settingsModal.style.display = 'block';
-                menu.classList.remove('active');
-            });
-
-            menuHelp.addEventListener('click', function() {
-                helpModal.style.display = 'block';
-                menu.classList.remove('active');
-            });
-
-            // Modal close handlers
-            closeSettings.addEventListener('click', function() {
-                settingsModal.style.display = 'none';
-            });
-
-            gameSettingsForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                saveGameSettings();
-                gameSaveSettingsBtn.classList.add('btn-saved');
-                gameSaveSettingsBtn.textContent = '✓ Saved!';
-                setTimeout(() => {
-                    gameSaveSettingsBtn.classList.remove('btn-saved');
-                    gameSaveSettingsBtn.textContent = 'Save Settings';
-                    settingsModal.style.display = 'none';
-                }, 1000);
-            });
-
-            closeHelp.addEventListener('click', function() {
-                helpModal.style.display = 'none';
-            });
-
-            closeHelpBtn.addEventListener('click', function() {
-                helpModal.style.display = 'none';
-            });
-
-            window.addEventListener('click', function(e) {
-                if (e.target === settingsModal) {
-                    settingsModal.style.display = 'none';
-                }
-                if (e.target === helpModal) {
-                    helpModal.style.display = 'none';
-                }
-            });
-
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    settingsModal.style.display = 'none';
-                    helpModal.style.display = 'none';
-                    menu.classList.remove('active');
-                }
-            });
-
-            document.getElementById('game-music-volume').addEventListener('input', function() {
-                document.getElementById('game-music-display').textContent = this.value + '%';
-            });
-
-            document.getElementById('game-sfx-volume').addEventListener('input', function() {
-                document.getElementById('game-sfx-display').textContent = this.value + '%';
-            });
-        }
-
-        function loadGameSettings() {
-            // Load settings from localStorage if available
-            const savedMusicVolume = localStorage.getItem('pantheonMusicVolume');
-            const savedSfxVolume = localStorage.getItem('pantheonSfxVolume');
-            
-            if (savedMusicVolume) {
-                document.getElementById('game-music-volume').value = savedMusicVolume;
-                document.getElementById('game-music-display').textContent = savedMusicVolume + '%';
+        if (state.deck.length === 0) return null;
+        
+        let attempts = 0;
+        const maxAttempts = Math.min(10, state.deck.length + state.discardPile.length);
+        
+        while (attempts < maxAttempts) {
+            if (state.deck.length === 0 && state.discardPile.length > 0) {
+                reshuffleDiscardIntoDeck(state);
             }
             
-            if (savedSfxVolume) {
-                document.getElementById('game-sfx-volume').value = savedSfxVolume;
-                document.getElementById('game-sfx-display').textContent = savedSfxVolume + '%';
-            }
-        }
-
-        function saveGameSettings() {
-            // Save settings to localStorage
-            const musicVolume = document.getElementById('game-music-volume').value;
-            const sfxVolume = document.getElementById('game-sfx-volume').value;
+            if (state.deck.length === 0) return null;
             
-            localStorage.setItem('pantheonMusicVolume', musicVolume);
-            localStorage.setItem('pantheonSfxVolume', sfxVolume);
-        }
-
-        function createCardElement(card, isCompleted = false) {
-            const cardDiv = document.createElement('div');
-            cardDiv.className = `card ${card.element} ${isCompleted ? 'completed' : ''}`;
+            const candidateCard = state.deck.pop();
             
-            if (card.element === 'retrograde') {
-                cardDiv.style.backgroundImage = "url('images/retrograde.png')";
-                cardDiv.style.backgroundSize = "100% 100%";
-                cardDiv.style.backgroundPosition = "center";
-                cardDiv.style.backgroundRepeat = "no-repeat";
-                cardDiv.innerHTML = ''; // Clear any inner content
+            const hasCardInActive = player.activeCards.some(card => card.name === candidateCard.name);
+            const hasCardInCompleted = player.completedCards.some(card => card.name === candidateCard.name);
+            
+            if (!hasCardInActive && !hasCardInCompleted) {
+                return candidateCard;
             } else {
-                cardDiv.innerHTML = `
-                    <div class="card-element">${card.element.toUpperCase()}</div>
-                    <div class="card-name">${card.name}</div>
-                    <div class="card-content">
-                        ${card.challenge && card.challenge.trim() !== "" ? `<div class="card-challenge">${card.challenge}</div>` : ''}
-                        ${card.disadvantage && card.disadvantage.trim() !== "" ? `<div class="card-disadvantage">${card.disadvantage}</div>` : ''}
-                        ${(!card.challenge || card.challenge.trim() === "") && (!card.disadvantage || card.disadvantage.trim() === "") ? 
-                            '<div style="text-align: center; font-style: italic; color: #a8c0ff;">Auto-complete when attempted</div>' : ''}
-                    </div>
-                `;
+                state.discardPile.push(candidateCard);
             }
-
-            cardDiv.addEventListener('click', function(e) {
-                const tradeModal = document.getElementById('trade-modal');
-                const tradeSelectResponder = document.getElementById('trade-select-responder');
-                const challengeTargetModal = document.getElementById('challenge-target-modal');
-
-                if (tradeModal && tradeModal.style.display === 'block' && tradeSelectResponder.style.display === 'block') {
-                    return;
-                }
-
-                if (challengeTargetModal && challengeTargetModal.style.display === 'block') {
-                    handleChallengeTargetSelection(card);
-                    return;
-                }
-
-                let parent = e.currentTarget.parentElement;
-                if (!parent) return;
-                if (parent.id === 'player1-active') selectCard(card, 1);
-                if (parent.id === 'player2-active') selectCard(card, 2);
-            });
             
-            return cardDiv;
+            attempts++;
         }
-
-        function selectCard(card, playerId) {
-            if (playerId !== gameState.currentPlayer) return;
-
-            const player = gameState.players[playerId];
-            if (player.selectedCard && player.selectedCard.id === card.id) {
-                player.selectedCard = null;
-            } else {
-                player.selectedCard = card;
-            }
-            updateGameDisplay();
+        
+        if (state.deck.length === 0 && state.discardPile.length > 0) {
+            reshuffleDiscardIntoDeck(state);
         }
+        
+        return state.deck.length > 0 ? state.deck.pop() : null;
+    }
 
-        function updateGameDisplay() {
-            if (!gameState) return;
+    function reshuffleDiscardIntoDeck(state) {
+        if (state.discardPile.length === 0) return;
+        state.deck.push(...state.discardPile);
+        state.discardPile = [];
+        shuffleDeck(state.deck);
+    }
 
-            document.getElementById('current-player').textContent = `Player ${gameState.currentPlayer}`;
+    function showActionFeedback(message, isSuccess = true) {
+        const feedback = document.getElementById('action-feedback');
+        feedback.textContent = message;
+        feedback.style.borderColor = isSuccess ? '#4CAF50' : '#FF5722';
+        feedback.style.display = 'block';
 
-            // Update player 1 display
-            const player1Active = document.getElementById('player1-active');
-            const player1Completed = document.getElementById('player1-completed');
-            player1Active.innerHTML = '';
-            player1Completed.innerHTML = '';
+        setTimeout(() => {
+            feedback.style.display = 'none';
+        }, 1800);
+    }
 
-            gameState.players[1].activeCards.forEach(card => {
-                const el = createCardElement(card);
-                if (gameState.currentPlayer === 2) el.classList.add('hidden');
-                if (gameState.players[1].selectedCard && gameState.players[1].selectedCard.id === card.id) el.classList.add('selected');
-                player1Active.appendChild(el);
-            });
+    function updatePlayerCounts() {
+        if (!gameState) return;
+        document.getElementById('player1-active-count').textContent = gameState.players[1].activeCards.length;
+        document.getElementById('player1-completed-count').textContent = gameState.players[1].completedCards.length;
+        document.getElementById('player2-active-count').textContent = gameState.players[2].activeCards.length;
+        document.getElementById('player2-completed-count').textContent = gameState.players[2].completedCards.length;
+    }
 
-            gameState.players[1].completedCards.forEach(card => {
-                player1Completed.appendChild(createCardElement(card, true));
-            });
-
-            // Update player 2 display
-            const player2Active = document.getElementById('player2-active');
-            const player2Completed = document.getElementById('player2-completed');
-            player2Active.innerHTML = '';
-            player2Completed.innerHTML = '';
-
-            gameState.players[2].activeCards.forEach(card => {
-                const el = createCardElement(card);
-                if (gameState.currentPlayer === 1) el.classList.add('hidden');
-                if (gameState.players[2].selectedCard && gameState.players[2].selectedCard.id === card.id) el.classList.add('selected');
-                player2Active.appendChild(el);
-            });
-
-            gameState.players[2].completedCards.forEach(card => {
-                player2Completed.appendChild(createCardElement(card, true));
-            });
-
-            document.getElementById('deck-count').textContent = gameState.deck.length;
-
-            // Update retrograde button states
-            document.getElementById('retrograde-1').disabled = gameState.players[1].usedRetrograde;
-            document.getElementById('retrograde-2').disabled = gameState.players[2].usedRetrograde;
-
-            updatePlayerCounts();
-        }
-
-        function forceForsakeCardById(playerId, cardId, reason) {
-            const player = gameState.players[playerId];
-            let removed = false;
-
-            // Active
-            if (player.activeCards.find(c => c.id === cardId)) {
-                player.activeCards = player.activeCards.filter(c => c.id !== cardId);
-                removed = true;
-            }
-            // Completed
-            if (player.completedCards.find(c => c.id === cardId)) {
-                player.completedCards = player.completedCards.filter(c => c.id !== cardId);
-                removed = true;
-            }
-
-            if (removed) {
-                const cardObj = allCards.find(c => c.id === cardId) || { id: cardId, name: 'Unknown' };
-                gameState.discardPile.push(cardObj);
-                showActionFeedback(`Card forsaken${reason ? `: ${reason}` : ''}`, false);
-            }
-        }
-
-        function resolveTaurusAfterCardChange(playerId) {
-            const player = gameState.players[playerId];
-            if (!player.taurusPending || !player.taurusPendingId || !player.taurusSnapshot) return;
-
-            const currentSnapshot = {
-                active: player.activeCards.map(c => c.id).sort().join(','),
-                completed: player.completedCards.map(c => c.id).sort().join(',')
-            };
-
-            if (currentSnapshot.active !== player.taurusSnapshot.active ||
-                currentSnapshot.completed !== player.taurusSnapshot.completed) {
-
-                const taurusId = player.taurusPendingId;
-                forceForsakeCardById(playerId, taurusId, 'Taurus failed due to card loss');
-                player.taurusPending = false;
-                player.taurusPendingId = null;
-                player.taurusSnapshot = null;
-            }
-        }
-
-        function resolveOpponentScorpioOnCompletion(completingPlayerId) {
-            const opponentId = completingPlayerId === 1 ? 2 : 1;
+    function createCardElement(card, isCompleted = false, isHidden = false, playerId = null) {
+        const cardDiv = document.createElement('div');
+        
+        let shouldHide = isHidden;
+        if (playerId && gameState) {
+            const opponentId = playerId === 1 ? 2 : 1;
             const opponent = gameState.players[opponentId];
-
-            const scorpioCards = opponent.activeCards.filter(c => c.name === 'Scorpio');
-            scorpioCards.forEach(s => {
-                forceForsakeCardById(opponentId, s.id, `Scorpio failed because opponent completed a challenge`);
-            });
+            if (opponent.piscesActive) {
+                shouldHide = false;
+            }
         }
 
-        function runPostCardChangeChecks() {
-            refillToThree(gameState, 1);
-            refillToThree(gameState, 2);
+        cardDiv.className = `card ${card.element} ${isCompleted ? 'completed' : ''} ${shouldHide ? 'hidden' : ''}`;
+        
+        if (!shouldHide && !isCompleted && card.image) {
+            cardDiv.style.backgroundImage = `url('${card.image}')`;
+        } else if (!shouldHide && isCompleted && card.image) {
+            cardDiv.style.backgroundImage = `url('${card.image}')`;
+            cardDiv.style.opacity = '0.7';
+        } else if (shouldHide) {
+            cardDiv.style.backgroundImage = "url('images/card_back.png')";
+        }
+
+        cardDiv.addEventListener('click', function(e) {
+            const tradeModal = document.getElementById('trade-modal');
+            const challengeTargetModal = document.getElementById('challenge-target-modal');
+            
+            const parentId = e.currentTarget.parentElement.id;
+            const currentPlayer = gameState.currentPlayer;
+            
+            if (tradeModal && tradeModal.style.display === 'block') {
+                return;
+            }
+
+            if (challengeTargetModal && challengeTargetModal.style.display === 'block') {
+                handleChallengeTargetSelection(card);
+                return;
+            }
+
+            if (currentPlayer === 1 && parentId === 'player1-active') {
+                selectCard(card, 1);
+            } else if (currentPlayer === 2 && parentId === 'player2-active') {
+                selectCard(card, 2);
+            }
+        });
+        
+        return cardDiv;
+    }
+
+    function selectCard(card, playerId) {
+        if (playerId !== gameState.currentPlayer) return;
+
+        const player = gameState.players[playerId];
+        if (player.selectedCard && player.selectedCard.id === card.id) {
+            player.selectedCard = null;
+        } else {
+            player.selectedCard = card;
+        }
+        updateGameDisplay();
+    }
+
+    function updateGameDisplay() {
+        if (!gameState) return;
+
+        document.getElementById('current-player').textContent = `Player ${gameState.currentPlayer}`;
+
+        const player1Active = document.getElementById('player1-active');
+        const player1Completed = document.getElementById('player1-completed');
+        player1Active.innerHTML = '';
+        player1Completed.innerHTML = '';
+
+        const shouldHidePlayer1 = gameState.currentPlayer === 2 && !gameState.players[1].piscesActive;
+        gameState.players[1].activeCards.forEach(card => {
+            const el = createCardElement(card, false, shouldHidePlayer1, 1);
+            if (gameState.players[1].selectedCard && gameState.players[1].selectedCard.id === card.id) el.classList.add('selected');
+            player1Active.appendChild(el);
+        });
+
+        gameState.players[1].completedCards.forEach(card => {
+            player1Completed.appendChild(createCardElement(card, true));
+        });
+
+        const player2Active = document.getElementById('player2-active');
+        const player2Completed = document.getElementById('player2-completed');
+        player2Active.innerHTML = '';
+        player2Completed.innerHTML = '';
+
+        const shouldHidePlayer2 = gameState.currentPlayer === 1 && !gameState.players[2].piscesActive;
+        gameState.players[2].activeCards.forEach(card => {
+            const el = createCardElement(card, false, shouldHidePlayer2, 2);
+            if (gameState.players[2].selectedCard && gameState.players[2].selectedCard.id === card.id) el.classList.add('selected');
+            player2Active.appendChild(el);
+        });
+
+        gameState.players[2].completedCards.forEach(card => {
+            player2Completed.appendChild(createCardElement(card, true));
+        });
+
+        const p1HasRetrograde = gameState.players[1].activeCards.some(card => card.element === 'retrograde');
+        const p2HasRetrograde = gameState.players[2].activeCards.some(card => card.element === 'retrograde');
+        
+        document.getElementById('retrograde-1').disabled = gameState.players[1].usedRetrograde || !p1HasRetrograde;
+        document.getElementById('retrograde-2').disabled = gameState.players[2].usedRetrograde || !p2HasRetrograde;
+
+        updatePlayerCounts();
+    }
+
+
+    function cleanupModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    function initializeGame() {
+        gameState = {
+            currentPlayer: 1,
+            players: {
+                1: { 
+                    activeCards: [], 
+                    completedCards: [], 
+                    usedRetrograde: false,
+                    selectedCard: null,
+                    skipNextTurn: false,
+                    taurusActive: false,
+                    taurusCardId: null,
+                    taurusSnapshot: null,
+                    geminiActive: false,
+                    geminiCardId: null,
+                    geminiTurnsRemaining: 0,
+                    geminiCopyMove: null,
+                    piscesActive: false,
+                    piscesCardId: null,
+                    piscesTurnsRemaining: 0,
+                    capricornAttempt: null,
+                    aquariusAttempt: null,
+                    lastAction: null,
+                    lastActionDetails: null
+                },
+                2: { 
+                    activeCards: [], 
+                    completedCards: [], 
+                    usedRetrograde: false,
+                    selectedCard: null,
+                    skipNextTurn: false,
+                    taurusActive: false,
+                    taurusCardId: null,
+                    taurusSnapshot: null,
+                    geminiActive: false,
+                    geminiCardId: null,
+                    geminiTurnsRemaining: 0,
+                    geminiCopyMove: null,
+                    piscesActive: false,
+                    piscesCardId: null,
+                    piscesTurnsRemaining: 0,
+                    capricornAttempt: null,
+                    aquariusAttempt: null,
+                    lastAction: null,
+                    lastActionDetails: null
+                }
+            },
+            deck: shuffleDeck([...allCards]),
+            discardPile: [],
+            tradeOffer: null
+        };
+
+        for (let i = 0; i < 3; i++) {
+            const card1 = drawUniqueCard(gameState, gameState.players[1]);
+            if (card1) {
+                gameState.players[1].activeCards.push(card1);
+            }
+            
+            const card2 = drawUniqueCard(gameState, gameState.players[2]);
+            if (card2) {
+                gameState.players[2].activeCards.push(card2);
+            }
+        }
+
+        updateGameDisplay();
+    }
+
+    function handleScorpioChallenge(playerId, card) {
+        const player = gameState.players[playerId];
+        const otherCards = player.activeCards.filter(c => 
+            c.id !== card.id && 
+            c.challenge && 
+            c.challenge.trim() !== "" &&
+            c.name !== "Scorpio"
+        );
+        
+        if (otherCards.length === 0) {
+            showActionFeedback("Scorpio: No other cards with challenges available.", false);
+            player.selectedCard = null;
             updateGameDisplay();
+            return;
         }
+        
+        scorpioAttempt = {
+            scorpioCard: card,
+            playerId: playerId
+        };
+        
+        const modal = document.getElementById('challenge-target-modal');
+        const targetCardsContainer = document.getElementById('challenge-target-cards');
 
-        function attemptChallenge(playerId) {
-            if (playerId !== gameState.currentPlayer) {
-                showActionFeedback("It's not your turn!", false);
+        targetCardsContainer.innerHTML = '';
+
+        otherCards.forEach(targetCard => {
+            const cardEl = createCardElement(targetCard);
+            cardEl.style.cursor = 'pointer';
+            cardEl.addEventListener('click', function() {
+
+                scorpioAttempt.targetCard = targetCard;
+                
+                handleCardSpecificChallenge(playerId, targetCard, true); 
+                closeChallengeTargetModal();
+            });
+            targetCardsContainer.appendChild(cardEl);
+        });
+
+        modal.style.display = 'block';
+    }
+
+    function handleCardSpecificChallenge(playerId, card, isScorpioAttemptParam = false) {
+        const player = gameState.players[playerId];
+        
+        if (card.name === "Scorpio") {
+        
+            if (isScorpioAttemptParam) {
+                showActionFeedback("Cannot use Scorpio to complete another Scorpio", false);
+                handleScorpioFailure();
                 return;
             }
-
-            const player = gameState.players[playerId];
-
-            if (!player.selectedCard) {
-                showActionFeedback("Select a card first!", false);
+        
+            handleScorpioChallenge(playerId, card);
+            return;
+        }
+        
+        switch(card.name) {
+            case "Capricorn":
+                handleCapricornChallenge(playerId, card, isScorpioAttemptParam);
                 return;
-            }
-
-            const card = player.selectedCard;
-
-            if (card.element === 'retrograde') {
-                showActionFeedback("Retrograde cards cannot be attempted as challenges!", false);
-                player.selectedCard = null;
-                updateGameDisplay();
+            case "Leo":
+                handleLeoChallenge(playerId, card, isScorpioAttemptParam);
                 return;
-            }
-
-            // Handle Scorpio special case
-            if (card.name === "Scorpio" && card.challenge && card.challenge.includes("complete any active cards challenge")) {
-                challengeSourceCard = card;
-                openChallengeTargetModal();
+            case "Cancer":
+                handleCancerChallenge(playerId, card, isScorpioAttemptParam);
                 return;
-            }
-
-            // Auto-complete cards with no challenge
-            if (!card.challenge || card.challenge.trim() === "") {
-                showActionFeedback(`${card.name} auto-completed!`, true);
-                player.completedCards.push(card);
-                player.activeCards = player.activeCards.filter(c => c.id !== card.id);
-                player.selectedCard = null;
-
-                resolveOpponentScorpioOnCompletion(gameState.currentPlayer);
-
-                refillToThree(gameState, gameState.currentPlayer);
-                runPostCardChangeChecks();
-                checkWinCondition();
-                endTurn();
+            case "Virgo":
+                handleVirgoChallenge(playerId, card, isScorpioAttemptParam);
                 return;
-            }
-
-            // Handle special challenges
-            if (card.name === "Capricorn") {
-                openCapricornChoiceModal(card);
+            case "Taurus":
+                handleTaurusChallenge(playerId, card, isScorpioAttemptParam);
                 return;
-            }
-
-            if (card.name === "Leo" && card.challenge.includes("predict")) {
-                startPredictionChallenge(card);
+            case "Gemini":
+                handleGeminiChallenge(playerId, card, isScorpioAttemptParam);
                 return;
-            }
-
-            if (card.name === "Cancer") {
-                openCancerChoiceModal(card);
+            case "Pisces":
+                handlePiscesChallenge(playerId, card, isScorpioAttemptParam);
                 return;
-            }
-
-            if (card.name === "Virgo") {
-                openVirgoChoiceModal(card);
+            case "Libra":
+                handleLibraChallenge(playerId, card, isScorpioAttemptParam);
                 return;
-            }
-
-            // For Taurus
-            if (card.name === "Taurus") {
-                player.taurusPending = true;
-                player.taurusPendingId = card.id;
-                player.taurusSnapshot = {
-                    active: player.activeCards.map(c => c.id).sort().join(','),
-                    completed: player.completedCards.map(c => c.id).sort().join(',')
-                };
-
-                showActionFeedback("Taurus: Keep your hand unchanged until your next turn to complete this card.", true);
-                player.selectedCard = null;
-                refillToThree(gameState, gameState.currentPlayer);
-                updateGameDisplay();
-                endTurn();
+            case "Aries":
+                handleAriesChallenge(playerId, card, isScorpioAttemptParam);
                 return;
-            }
+            case "Sagittarius":
+                handleSagittariusChallenge(playerId, card, isScorpioAttemptParam);
+                return;
+            case "Aquarius":
+                handleAquariusChallenge(playerId, card, isScorpioAttemptParam);
+                return;
 
-            // For Libra
-            if (card.name === "Libra") {
-                if (hasAllElements(player)) {
-                    showActionFeedback("Libra completed! You have all elements.", true);
+            default:
+                const success = confirm(`Attempt ${card.name} challenge?\n\n"${card.challenge}"\n\nClick OK if successful, Cancel if failed.`);
+
+                if (success) {
                     player.completedCards.push(card);
                     player.activeCards = player.activeCards.filter(c => c.id !== card.id);
-                    resolveOpponentScorpioOnCompletion(gameState.currentPlayer);
+                    
+                    if (isScorpioAttemptParam && scorpioAttempt) {
+                        player.completedCards.push(scorpioAttempt.scorpioCard);
+                        player.activeCards = player.activeCards.filter(c => c.id !== scorpioAttempt.scorpioCard.id);
+                        showActionFeedback(`Success: ${card.name} and Scorpio completed!`, true);
+                        scorpioAttempt = null;
+                    } else {
+                        showActionFeedback(`Success: ${card.name} completed!`, true);
+                    }
                 } else {
-                    showActionFeedback("Libra failed! You don't have all elements.", false);
-                    if (countTotalCards(player) < 4) {
+                    if (isScorpioAttemptParam && scorpioAttempt) {
+                        player.activeCards = player.activeCards.filter(c => c.id !== scorpioAttempt.scorpioCard.id);
+                        gameState.discardPile.push(scorpioAttempt.scorpioCard);
+                        showActionFeedback(`Scorpio Challenge failed: Card forsaken.`, false);
+                        scorpioAttempt = null;
+                    } else {
+                        showActionFeedback(`Failed: ${card.name}`, false);
                         player.activeCards = player.activeCards.filter(c => c.id !== card.id);
                         gameState.discardPile.push(card);
-                        showActionFeedback("Libra disadvantage: card forsaken due to low card count.", false);
                     }
                 }
+
                 player.selectedCard = null;
-                refillToThree(gameState, gameState.currentPlayer);
-                runPostCardChangeChecks();
-                checkWinCondition();
-                endTurn();
-                return;
+                
+                updateGameDisplay();
+                setTimeout(() => {
+                    refillToThree(gameState, playerId);
+                    checkWinCondition();
+                    updateGameDisplay();
+                    endTurn();
+                }, 1000);
+        }
+    }
+
+    function handleScorpioFailure() {
+        if (!scorpioAttempt) return;
+        
+        const player = gameState.players[scorpioAttempt.playerId];
+        player.activeCards = player.activeCards.filter(c => c.id !== scorpioAttempt.scorpioCard.id);
+        gameState.discardPile.push(scorpioAttempt.scorpioCard);
+        showActionFeedback(`Scorpio Challenge failed: Card forsaken.`, false);
+        player.selectedCard = null;
+        scorpioAttempt = null;
+        
+        updateGameDisplay();
+        setTimeout(() => {
+            refillToThree(gameState, scorpioAttempt.playerId);
+            checkWinCondition();
+            updateGameDisplay();
+            endTurn();
+        }, 1000);
+    }
+
+    function closeChallengeTargetModal() {
+        const modal = document.getElementById('challenge-target-modal');
+        modal.style.display = 'none';
+    }
+
+    function completeScorpioIfAttempted(playerId, completedCard) {
+        if (scorpioAttempt && 
+            scorpioAttempt.playerId === playerId && 
+            scorpioAttempt.targetCard && 
+            scorpioAttempt.targetCard.id === completedCard.id) {
+            
+            const player = gameState.players[playerId];
+            player.completedCards.push(scorpioAttempt.scorpioCard);
+            player.activeCards = player.activeCards.filter(c => c.id !== scorpioAttempt.scorpioCard.id);
+            showActionFeedback(`Both ${completedCard.name} and Scorpio completed!`, true);
+            scorpioAttempt = null;
+            return true;
+        }
+        return false;
+    }
+
+    function handleAriesChallenge(playerId, card, isScorpioAttempt = false) {
+        const player = gameState.players[playerId];
+        const otherCards = player.activeCards.filter(c => c.id !== card.id);
+        
+        if (otherCards.length === 0) {
+            showActionFeedback("Aries: No other cards to forsake.", false);
+            player.selectedCard = null;
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
             }
+            updateGameDisplay();
+            return;
+        }
 
-            // For other cards with standard challenges
-            const success = confirm(`Attempt ${card.name} challenge?\n\n"${card.challenge}"\n\nClick OK if successful, Cancel if failed.`);
+        const modalHtml = `
+            <div class="modal-overlay" id="aries-modal" style="display: block;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Aries Challenge</h2>
+                        <button class="close-modal" id="close-aries">&times;</button>
+                    </div>
+                    <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
+                        Select cards to forsake (click to select/deselect):
+                    </p>
+                    <div id="aries-cards-container" class="card-grid-modal"></div>
+                    <div class="modal-buttons-row">
+                        <button class="btn btn-primary" id="aries-confirm">Confirm Selection</button>
+                        <button class="btn btn-secondary" id="aries-cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        `;
 
-            if (success) {
-                showActionFeedback(`Success: ${card.name}`, true);
-                player.completedCards.push(card);
-                player.activeCards = player.activeCards.filter(c => c.id !== card.id);
-                resolveOpponentScorpioOnCompletion(gameState.currentPlayer);
-            } else {
-                showActionFeedback(`Failed: ${card.name}`, false);
-                if (player.activeCards.find(c => c.id === card.id)) {
-                    player.activeCards = player.activeCards.filter(c => c.id !== card.id);
-                    gameState.discardPile.push(card);
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = document.getElementById('aries-modal');
+        const container = document.getElementById('aries-cards-container');
+        const confirmBtn = document.getElementById('aries-confirm');
+        const closeBtn = document.getElementById('close-aries');
+        const cancelBtn = document.getElementById('aries-cancel');
+
+        let selectedCards = [];
+
+        function cleanup() {
+            modal.remove();
+        }
+
+        otherCards.forEach(ariesCard => {
+            const cardEl = createCardElement(ariesCard);
+            cardEl.style.cursor = 'pointer';
+            cardEl.addEventListener('click', function() {
+                if (selectedCards.includes(ariesCard.id)) {
+                    selectedCards = selectedCards.filter(id => id !== ariesCard.id);
+                    cardEl.classList.remove('selected');
+                } else {
+                    selectedCards.push(ariesCard.id);
+                    cardEl.classList.add('selected');
                 }
-            }
-
-            player.selectedCard = null;
-            refillToThree(gameState, gameState.currentPlayer);
-            runPostCardChangeChecks();
-            checkWinCondition();
-            endTurn();
-        }
-
-        function startPredictionChallenge(card) {
-            const predictionHtml = `
-                <div class="modal-overlay" id="prediction-modal" style="display: block;">
-                    <div class="modal-content">
-                        <button class="close-modal" id="close-prediction">&times;</button>
-                        <h2 class="text-center mb-4" style="color: #e2e8ff;">Predict Next Card Element</h2>
-                        <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
-                            Predict the element of the next card in the deck:
-                        </p>
-                        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                            <button class="btn btn-primary prediction-choice" data-element="earth">Earth</button>
-                            <button class="btn btn-primary prediction-choice" data-element="air">Air</button>
-                            <button class="btn btn-primary prediction-choice" data-element="fire">Fire</button>
-                            <button class="btn btn-primary prediction-choice" data-element="water">Water</button>
-                        </div>
-                        <div class="text-center mt-4">
-                            <button class="btn btn-secondary" id="prediction-cancel">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            document.body.insertAdjacentHTML('beforeend', predictionHtml);
-
-            const modal = document.getElementById('prediction-modal');
-            const closeBtn = document.getElementById('close-prediction');
-            const cancelBtn = document.getElementById('prediction-cancel');
-            const choiceBtns = document.querySelectorAll('.prediction-choice');
-
-            function cleanup() {
-                modal.remove();
-            }
-
-            choiceBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const predictedElement = this.getAttribute('data-element');
-                    resolveLeoPrediction(card, predictedElement);
-                    cleanup();
-                });
             });
+            container.appendChild(cardEl);
+        });
 
-            closeBtn.addEventListener('click', cleanup);
-            cancelBtn.addEventListener('click', cleanup);
-
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) cleanup();
-            });
-        }
-
-        function resolveLeoPrediction(card, predictedElement) {
-            const player = gameState.players[gameState.currentPlayer];
-
-            if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
-            if (gameState.deck.length === 0) {
-                showActionFeedback("Prediction failed: no cards in deck", false);
-                return;
-            }
-
-            const nextCard = gameState.deck[gameState.deck.length - 1];
-            const actualElement = nextCard.element;
-
-            if (predictedElement === actualElement) {
-                player.completedCards.push(card);
-                player.activeCards = player.activeCards.filter(c => c.id !== card.id);
-                showActionFeedback(`Correct! Next card was ${actualElement}. ${card.name} completed!`, true);
-                resolveOpponentScorpioOnCompletion(gameState.currentPlayer);
-            } else {
-                const matchingCards = player.activeCards.filter(c => c.element === actualElement && c.id !== card.id);
-                matchingCards.forEach(lostCard => {
-                    player.activeCards = player.activeCards.filter(c => c.id !== lostCard.id);
-                    gameState.discardPile.push(lostCard);
-                });
-                showActionFeedback(`Wrong! Next card was ${actualElement}. Lost ${matchingCards.length} ${actualElement} card(s).`, false);
-            }
-
-            player.selectedCard = null;
-            refillToThree(gameState, gameState.currentPlayer);
-            runPostCardChangeChecks();
-            checkWinCondition();
-            endTurn();
-        }
-
-        function openCapricornChoiceModal(card) {
-            const player = gameState.players[gameState.currentPlayer];
-            const fireCards = player.activeCards.filter(c => c.element === 'fire' && c.id !== card.id);
-
-            const modalHtml = `
-                <div class="modal-overlay" id="capricorn-choice-modal" style="display: block;">
-                    <div class="modal-content">
-                        <button class="close-modal" id="close-capricorn">&times;</button>
-                        <h2 class="text-center mb-4" style="color: #e2e8ff;">Capricorn Challenge</h2>
-                        <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
-                            ${fireCards.length > 0 ? 
-                                'Choose how to complete Capricorn:' : 
-                                'No Fire cards to forsake. Try to draw an Earth card:'}
-                        </p>
-                        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">
-                            ${fireCards.length > 0 ? 
-                                `<button class="btn btn-primary" id="capricorn-forsake-fire">Forsake Fire Sign</button>` : 
-                                ''}
-                            <button class="btn btn-primary" id="capricorn-draw-earth">Try to Draw Earth</button>
-                        </div>
-                        <div class="text-center mt-4">
-                            <button class="btn btn-secondary" id="capricorn-cancel">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-
-            const modal = document.getElementById('capricorn-choice-modal');
-            const closeBtn = document.getElementById('close-capricorn');
-            const forsakeFireBtn = document.getElementById('capricorn-forsake-fire');
-            const drawEarthBtn = document.getElementById('capricorn-draw-earth');
-            const cancelBtn = document.getElementById('capricorn-cancel');
-
-            function cleanup() {
-                modal.remove();
-            }
-
-            if (forsakeFireBtn) {
-                forsakeFireBtn.addEventListener('click', function() {
-                    const player = gameState.players[gameState.currentPlayer];
-                    if (fireCards.length > 0) {
-                        const fireCard = fireCards[0];
-                        player.activeCards = player.activeCards.filter(c => c.id !== fireCard.id);
-                        gameState.discardPile.push(fireCard);
-
-                        player.completedCards.push(card);
-                        player.activeCards = player.activeCards.filter(c => c.id !== card.id);
-                        player.selectedCard = null;
-
-                        resolveOpponentScorpioOnCompletion(gameState.currentPlayer);
-                        showActionFeedback('Capricorn success: forsook a Fire sign.', true);
-                        cleanup();
-                        refillToThree(gameState, gameState.currentPlayer);
-                        runPostCardChangeChecks();
-                        checkWinCondition();
-                        endTurn();
+        confirmBtn.addEventListener('click', function() {
+            if (selectedCards.length > 0) {
+                const discardedCards = [];
+                const discardedNames = [];
+                
+                selectedCards.forEach(cardId => {
+                    const cardToDiscard = otherCards.find(c => c.id === cardId);
+                    if (cardToDiscard) {
+                        discardedCards.push(cardToDiscard);
+                        discardedNames.push(cardToDiscard.name);
+                        player.activeCards = player.activeCards.filter(c => c.id !== cardToDiscard.id);
+                        gameState.discardPile.push(cardToDiscard);
                     }
                 });
-            }
 
-            drawEarthBtn.addEventListener('click', function() {
-                const player = gameState.players[gameState.currentPlayer];
-                let foundEarth = false;
-
-                for (let i = 0; i < 3; i++) {
+                let drawnCards = [];
+                for (let i = 0; i < 2; i++) {
                     if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
                     if (gameState.deck.length === 0) break;
+                    const newCard = gameState.deck.pop();
+                    player.activeCards.push(newCard);
+                    drawnCards.push(newCard);
+                }
 
-                    const topCard = gameState.deck[gameState.deck.length - 1];
-                    if (topCard.element === 'earth') {
-                        const gained = gameState.deck.pop();
-                        player.activeCards.push(gained);
-                        showActionFeedback('Capricorn success: gained an Earth sign!', true);
-                        foundEarth = true;
+                cleanup();
+                updateGameDisplay();
+                
+                const matchedOriginal = drawnCards.some(drawnCard => discardedNames.includes(drawnCard.name));
 
+                setTimeout(() => {
+                    if (matchedOriginal) {
+                        showActionFeedback("Aries failed: Redrew a forsaken card.", false);
+                        player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+                        gameState.discardPile.push(card);
+                        
+                        if (isScorpioAttempt) {
+                            handleScorpioFailure();
+                        }
+                    } else {
                         player.completedCards.push(card);
                         player.activeCards = player.activeCards.filter(c => c.id !== card.id);
-                        resolveOpponentScorpioOnCompletion(gameState.currentPlayer);
-                        break;
-                    } else {
-                        const discarded = gameState.deck.pop();
-                        gameState.discardPile.push(discarded);
-                    }
-                }
-
-                if (!foundEarth) {
-                    showActionFeedback('Capricorn failed: No Earth sign found. Card forsaken.', false);
-                    player.activeCards = player.activeCards.filter(c => c.id !== card.id);
-                    gameState.discardPile.push(card);
-                }
-
-                player.selectedCard = null;
-                cleanup();
-                refillToThree(gameState, gameState.currentPlayer);
-                runPostCardChangeChecks();
-                checkWinCondition();
-                endTurn();
-            });
-
-            closeBtn.addEventListener('click', cleanup);
-            cancelBtn.addEventListener('click', cleanup);
-
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) cleanup();
-            });
-        }
-
-        function openCancerChoiceModal(card) {
-            const player = gameState.players[gameState.currentPlayer];
-            const availableCards = player.activeCards.filter(c => c.id !== card.id);
-
-            if (availableCards.length === 0) {
-                showActionFeedback('Cancer: no card available to offer.', false);
-                return;
-            }
-
-            const modalHtml = `
-                <div class="modal-overlay" id="cancer-choice-modal" style="display: block;">
-                    <div class="modal-content">
-                        <button class="close-modal" id="close-cancer">&times;</button>
-                        <h2 class="text-center mb-4" style="color: #e2e8ff;">Cancer Challenge</h2>
-                        <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
-                            Select a card to offer to your opponent:
-                        </p>
-                        <div id="cancer-cards-container" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;"></div>
-                        <div class="text-center mt-4">
-                            <button class="btn btn-secondary" id="cancer-cancel">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            const modal = document.getElementById('cancer-choice-modal');
-            const container = document.getElementById('cancer-cards-container');
-            const closeBtn = document.getElementById('close-cancer');
-            const cancelBtn = document.getElementById('cancer-cancel');
-
-            function cleanup() {
-                modal.remove();
-            }
-
-            availableCards.forEach(offerCard => {
-                const cardEl = createCardElement(offerCard);
-                cardEl.style.cursor = 'pointer';
-                cardEl.addEventListener('click', function() {
-                    gameState.tradeOffer = { 
-                        from: gameState.currentPlayer, 
-                        card: offerCard, 
-                        isCancer: true,
-                        cancerSourceCard: card
-                    };
-                    cleanup();
-                    openTradeModalForOffer();
-                });
-                container.appendChild(cardEl);
-            });
-
-            closeBtn.addEventListener('click', cleanup);
-            cancelBtn.addEventListener('click', cleanup);
-
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) cleanup();
-            });
-        }
-
-        function openVirgoChoiceModal(card) {
-            const player = gameState.players[gameState.currentPlayer];
-            const otherCards = player.activeCards.filter(c => c.id !== card.id);
-
-            if (otherCards.length < 2) {
-                showActionFeedback('Virgo: Need at least 2 other cards to forsake.', false);
-                return;
-            }
-
-            const modalHtml = `
-                <div class="modal-overlay" id="virgo-choice-modal" style="display: block;">
-                    <div class="modal-content">
-                        <button class="close-modal" id="close-virgo">&times;</button>
-                        <h2 class="text-center mb-4" style="color: #e2e8ff;">Virgo Challenge</h2>
-                        <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
-                            Select two cards to forsake (click to select/deselect):
-                        </p>
-                        <div id="virgo-cards-container" style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;"></div>
-                        <div class="text-center mt-4">
-                            <button class="btn btn-primary" id="virgo-confirm" disabled>Confirm Selection</button>
-                            <button class="btn btn-secondary" id="virgo-cancel">Cancel</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            const modal = document.getElementById('virgo-choice-modal');
-            const container = document.getElementById('virgo-cards-container');
-            const confirmBtn = document.getElementById('virgo-confirm');
-            const closeBtn = document.getElementById('close-virgo');
-            const cancelBtn = document.getElementById('virgo-cancel');
-
-            let selectedCards = [];
-
-            function cleanup() {
-                modal.remove();
-            }
-
-            function updateConfirmButton() {
-                confirmBtn.disabled = selectedCards.length !== 2;
-            }
-
-            otherCards.forEach(virgoCard => {
-                const cardEl = createCardElement(virgoCard);
-                cardEl.style.cursor = 'pointer';
-                cardEl.addEventListener('click', function() {
-                    if (selectedCards.includes(virgoCard.id)) {
-                        selectedCards = selectedCards.filter(id => id !== virgoCard.id);
-                        cardEl.classList.remove('selected');
-                    } else if (selectedCards.length < 2) {
-                        selectedCards.push(virgoCard.id);
-                        cardEl.classList.add('selected');
-                    }
-                    updateConfirmButton();
-                });
-                container.appendChild(cardEl);
-            });
-
-            confirmBtn.addEventListener('click', function() {
-                if (selectedCards.length === 2) {
-                    const player = gameState.players[gameState.currentPlayer];
-                    const previousElements = otherCards.map(c => c.element);
-
-                    // Remove selected cards
-                    player.activeCards = player.activeCards.filter(c => !selectedCards.includes(c.id));
-                    selectedCards.forEach(cardId => {
-                        const cardToDiscard = otherCards.find(c => c.id === cardId);
-                        if (cardToDiscard) gameState.discardPile.push(cardToDiscard);
-                    });
-
-                    // Auto-draw 2 new cards
-                    let drawnCards = [];
-                    for (let i = 0; i < 2; i++) {
-                        if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
-                        if (gameState.deck.length === 0) break;
-                        const newCard = gameState.deck.pop();
-                        player.activeCards.push(newCard);
-                        drawnCards.push(newCard);
-                    }
-
-                    // Check disadvantage
-                    const newElements = drawnCards.map(c => c.element);
-                    let matchCount = 0;
-                    previousElements.forEach(element => {
-                        if (newElements.includes(element)) {
-                            matchCount++;
+                        
+                        if (isScorpioAttempt) {
+                            completeScorpioIfAttempted(playerId, card);
+                            showActionFeedback("Aries completed! Both Aries and Scorpio completed!", true);
+                        } else {
+                            showActionFeedback("Aries completed successfully!", true);
                         }
-                    });
+                    }
 
-                    if (matchCount >= 2 && player.completedCards.length > 0) {
+                    player.selectedCard = null;
+                    
+                    setTimeout(() => {
+                        refillToThree(gameState, playerId);
+                        checkWinCondition();
+                        updateGameDisplay();
+                        endTurn();
+                    }, 1000);
+                }, 1000);
+            }
+        }
+    );
+
+    function handleCancellation() {
+        cleanup();
+        player.selectedCard = null;
+        if (isScorpioAttempt) {
+            handleScorpioFailure();
+        }
+        updateGameDisplay();
+    }
+
+    closeBtn.addEventListener('click', handleCancellation);
+    cancelBtn.addEventListener('click', handleCancellation);
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) handleCancellation();
+    });
+}
+
+    function handleVirgoChallenge(playerId, card, isScorpioAttempt = false) {
+        const player = gameState.players[playerId];
+        const otherCards = player.activeCards.filter(c => c.id !== card.id);
+
+        if (otherCards.length < 2) {
+            showActionFeedback('Virgo: Need at least 2 other cards to forsake.', false);
+            player.selectedCard = null;
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            }
+            updateGameDisplay();
+            return;
+        }
+
+        const modalHtml = `
+            <div class="modal-overlay" id="virgo-modal" style="display: block;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">Virgo Challenge</h2>
+                        <button class="close-modal" id="close-virgo">&times;</button>
+                    </div>
+                    <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
+                        Select two cards to forsake (click to select/deselect):
+                    </p>
+                    <div id="virgo-cards-container" class="card-grid-modal"></div>
+                    <div class="modal-buttons-row">
+                        <button class="btn btn-primary" id="virgo-confirm" disabled>Confirm Selection</button>
+                        <button class="btn btn-secondary" id="virgo-cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = document.getElementById('virgo-modal');
+        const container = document.getElementById('virgo-cards-container');
+        const confirmBtn = document.getElementById('virgo-confirm');
+        const closeBtn = document.getElementById('close-virgo');
+        const cancelBtn = document.getElementById('virgo-cancel');
+
+        let selectedCards = [];
+
+        function cleanup() {
+            modal.remove();
+        }
+
+        function updateConfirmButton() {
+            confirmBtn.disabled = selectedCards.length !== 2;
+        }
+
+        otherCards.forEach(virgoCard => {
+            const cardEl = createCardElement(virgoCard);
+            cardEl.style.cursor = 'pointer';
+            cardEl.addEventListener('click', function() {
+                if (selectedCards.includes(virgoCard.id)) {
+                    selectedCards = selectedCards.filter(id => id !== virgoCard.id);
+                    cardEl.classList.remove('selected');
+                } else if (selectedCards.length < 2) {
+                    selectedCards.push(virgoCard.id);
+                    cardEl.classList.add('selected');
+                }
+                updateConfirmButton();
+            });
+            container.appendChild(cardEl);
+        });
+
+        confirmBtn.addEventListener('click', function() {
+            if (selectedCards.length === 2) {
+                const discardedElements = [];
+                const discardedCards = [];
+                
+                selectedCards.forEach(cardId => {
+                    const cardToDiscard = otherCards.find(c => c.id === cardId);
+                    if (cardToDiscard) {
+                        discardedElements.push(cardToDiscard.element);
+                        discardedCards.push(cardToDiscard);
+                        player.activeCards = player.activeCards.filter(c => c.id !== cardToDiscard.id);
+                        gameState.discardPile.push(cardToDiscard);
+                    }
+                });
+
+                let drawnCards = [];
+                for (let i = 0; i < 2; i++) {
+                    if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
+                    if (gameState.deck.length === 0) break;
+                    const newCard = gameState.deck.pop();
+                    player.activeCards.push(newCard);
+                    drawnCards.push(newCard);
+                }
+
+                cleanup();
+                updateGameDisplay();
+                
+                const drawnElements = drawnCards.map(c => c.element);
+                const elementCounts = {};
+                discardedElements.forEach(el => {
+                    elementCounts[el] = (elementCounts[el] || 0) + 1;
+                });
+
+                let matchedBoth = true;
+                for (const [element, count] of Object.entries(elementCounts)) {
+                    const drawnCount = drawnElements.filter(el => el === element).length;
+                    if (drawnCount < count) {
+                        matchedBoth = false;
+                        break;
+                    }
+                }
+
+                setTimeout(() => {
+                    if (matchedBoth && player.completedCards.length > 0) {
                         const toDiscard = player.completedCards[0];
                         player.completedCards = player.completedCards.filter(c => c.id !== toDiscard.id);
                         gameState.discardPile.push(toDiscard);
@@ -1998,472 +1679,2069 @@
                         showActionFeedback('Virgo completed!', true);
                     }
 
-                    // Complete Virgo card
                     player.completedCards.push(card);
                     player.activeCards = player.activeCards.filter(c => c.id !== card.id);
-                    player.selectedCard = null;
 
-                    resolveOpponentScorpioOnCompletion(gameState.currentPlayer);
-
-                    cleanup();
-                    refillToThree(gameState, gameState.currentPlayer);
-                    runPostCardChangeChecks();
-                    checkWinCondition();
-                    endTurn();
-                }
-            });
-
-            closeBtn.addEventListener('click', cleanup);
-            cancelBtn.addEventListener('click', cleanup);
-
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) cleanup();
-            });
-
-            updateConfirmButton();
-        }
-
-        function openChallengeTargetModal() {
-            const player = gameState.players[gameState.currentPlayer];
-            const modal = document.getElementById('challenge-target-modal');
-            const targetCardsContainer = document.getElementById('challenge-target-cards');
-
-            targetCardsContainer.innerHTML = '';
-
-            const validTargets = player.activeCards.filter(card => 
-                card.id !== challengeSourceCard.id && 
-                card.challenge && 
-                card.challenge.trim() !== "" &&
-                card.name !== "Scorpio"
-            );
-
-            validTargets.forEach(card => {
-                const cardEl = createCardElement(card);
-                cardEl.classList.add('target');
-                cardEl.addEventListener('click', function() {
-                    handleChallengeTargetSelection(card);
-                });
-                targetCardsContainer.appendChild(cardEl);
-            });
-
-            if (targetCardsContainer.children.length === 0) {
-                targetCardsContainer.innerHTML = '<p style="color: #c2a8ff; text-align: center;">No other cards with challenges available.</p>';
-            }
-
-            modal.style.display = 'block';
-        }
-
-        function handleChallengeTargetSelection(targetCard) {
-            const player = gameState.players[gameState.currentPlayer];
-            const success = confirm(`Attempt ${targetCard.name} challenge?\n\n"${targetCard.challenge}"\n\nClick OK if successful, Cancel if failed.`);
-
-            if (success) {
-                showActionFeedback(`Challenge succeeded: ${targetCard.name}`, true);
-                player.completedCards.push(targetCard);
-                player.activeCards = player.activeCards.filter(c => c.id !== targetCard.id);
-
-                player.completedCards.push(challengeSourceCard);
-                player.activeCards = player.activeCards.filter(c => c.id !== challengeSourceCard.id);
-                showActionFeedback(`${challengeSourceCard.name} also completed!`, true);
-
-                resolveOpponentScorpioOnCompletion(gameState.currentPlayer);
-            } else {
-                showActionFeedback(`Challenge failed: ${targetCard.name}`, false);
-                if (player.activeCards.find(c => c.id === targetCard.id)) {
-                    player.activeCards = player.activeCards.filter(c => c.id !== targetCard.id);
-                    gameState.discardPile.push(targetCard);
-                }
-
-                if (challengeSourceCard.name === "Scorpio") {
-                    showActionFeedback('Scorpio disadvantage: card forsaken.', false);
-                    player.activeCards = player.activeCards.filter(c => c.id !== challengeSourceCard.id);
-                    gameState.discardPile.push(challengeSourceCard);
-                }
-            }
-
-            player.selectedCard = null;
-            challengeSourceCard = null;
-            closeChallengeTargetModal();
-            refillToThree(gameState, gameState.currentPlayer);
-            runPostCardChangeChecks();
-            checkWinCondition();
-            endTurn();
-        }
-
-        function closeChallengeTargetModal() {
-            const modal = document.getElementById('challenge-target-modal');
-            modal.style.display = 'none';
-            challengeSourceCard = null;
-        }
-
-        function hasAllElements(player) {
-            const elements = new Set();
-            player.activeCards.concat(player.completedCards).forEach(card => {
-                if (card.element && card.element !== 'retrograde') {
-                    elements.add(card.element);
-                }
-            });
-            return elements.size >= 4;
-        }
-
-        function countTotalCards(player) {
-            return player.activeCards.length + player.completedCards.length;
-        }
-
-        function forsakeAndDraw(playerId) {
-            if (playerId !== gameState.currentPlayer) {
-                showActionFeedback("It's not your turn!", false);
-                return;
-            }
-
-            const player = gameState.players[playerId];
-            if (!player.selectedCard) {
-                showActionFeedback("Please select a card to forsake first!", false);
-                return;
-            }
-            const discardedCard = player.selectedCard;
-            player.activeCards = player.activeCards.filter(c => c.id !== discardedCard.id);
-            gameState.discardPile.push(discardedCard);
-
-            if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
-            if (gameState.deck.length === 0) {
-                showActionFeedback("No cards left in the deck!", false);
-            } else {
-                const newCard = gameState.deck.pop();
-                player.activeCards.push(newCard);
-                showActionFeedback('You forsaked a card and drew a new one.', true);
-            }
-
-            player.selectedCard = null;
-            refillToThree(gameState, gameState.currentPlayer);
-            runPostCardChangeChecks();
-            endTurn();
-        }
-
-        function drawFromDeck() {
-            const player = gameState.players[gameState.currentPlayer];
-
-            if (virgoState && virgoState.playerId === gameState.currentPlayer) {
-                if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
-                if (gameState.deck.length === 0) {
-                    showActionFeedback("No cards left in the deck!", false);
-                    return;
-                }
-
-                const newCard = gameState.deck.pop();
-                player.activeCards.push(newCard);
-
-                const currentActiveCount = player.activeCards.length;
-                const cardsDrawn = currentActiveCount - (3 - virgoState.selectedCardIds.length);
-
-                if (cardsDrawn < 2) {
-                    showActionFeedback(`Virgo: Drew ${newCard.name}. Click deck again to draw second card.`, true);
-                } else {
-                    const newElements = player.activeCards.map(c => c.element);
-                    let matchCount = 0;
-                    virgoState.previousElements.forEach(element => {
-                        if (newElements.includes(element)) {
-                            matchCount++;
-                        }
-                    });
-
-                    if (matchCount >= 2 && player.completedCards.length > 0) {
-                        const toDiscard = player.completedCards[0];
-                        player.completedCards = player.completedCards.filter(c => c.id !== toDiscard.id);
-                        gameState.discardPile.push(toDiscard);
-                        showActionFeedback('Virgo completed but lost one completed card due to disadvantage.', true);
-                    } else {
-                        showActionFeedback('Virgo completed!', true);
+                    if (isScorpioAttempt) {
+                        completeScorpioIfAttempted(playerId, card);
+                        showActionFeedback('Virgo completed! Both Virgo and Scorpio completed!', true);
                     }
 
-                    player.completedCards.push(virgoState.virgoCard);
-                    player.activeCards = player.activeCards.filter(c => c.id !== virgoState.virgoCard.id);
                     player.selectedCard = null;
 
-                    resolveOpponentScorpioOnCompletion(gameState.currentPlayer);
-                    virgoState = null;
+                    setTimeout(() => {
+                        refillToThree(gameState, playerId);
+                        checkWinCondition();
+                        updateGameDisplay();
+                        endTurn();
+                    }, 1000);
+                }, 1000);
+            }
+        });
 
-                    refillToThree(gameState, gameState.currentPlayer);
-                    runPostCardChangeChecks();
+        function handleCancellation() {
+            cleanup();
+            player.selectedCard = null;
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            }
+            updateGameDisplay();
+        }
+
+        closeBtn.addEventListener('click', handleCancellation);
+        cancelBtn.addEventListener('click', handleCancellation);
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) handleCancellation();
+        });
+
+        updateConfirmButton();
+    }
+
+    function handleCapricornChallenge(playerId, card, isScorpioAttempt = false) {
+    const player = gameState.players[playerId];
+    const fireCards = player.activeCards.filter(c => c.element === 'fire' && c.id !== card.id);
+    
+    if (player.capricornAttempt && !isScorpioAttempt) {
+        handleCapricornFinalTry(playerId, card, isScorpioAttempt);
+        return;
+    }
+    
+    if (!isScorpioAttempt) {
+        player.capricornAttempt = {
+            cardId: card.id,
+            fireCards: fireCards.map(c => c.id),
+            attemptNumber: 1
+        };
+    }
+
+    const modalHtml = `
+        <div class="modal-overlay" id="capricorn-modal" style="display: block;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">${isScorpioAttempt ? 'Scorpio Targeting: ' : ''}Capricorn Challenge ${!isScorpioAttempt && player.capricornAttempt ? '(First Attempt)' : ''}</h2>
+                    <button class="close-modal" id="close-capricorn">&times;</button>
+                </div>
+                <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
+                    ${fireCards.length > 0 ? 
+                        'Choose how to complete Capricorn:' : 
+                        'No Fire cards to forsake. Try to draw an Earth card:'}
+                </p>
+                <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                    ${fireCards.length > 0 ? 
+                        `<button class="btn btn-primary" id="capricorn-forsake-fire">Forsake Fire Sign</button>` : 
+                        ''}
+                    <button class="btn btn-primary" id="capricorn-draw-earth">Try to Draw Earth</button>
+                </div>
+                <div class="modal-buttons-row">
+                    <button class="btn btn-secondary" id="capricorn-cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    const modal = document.getElementById('capricorn-modal');
+    const closeBtn = document.getElementById('close-capricorn');
+    const forsakeFireBtn = document.getElementById('capricorn-forsake-fire');
+    const drawEarthBtn = document.getElementById('capricorn-draw-earth');
+    const cancelBtn = document.getElementById('capricorn-cancel');
+
+    function cleanup() {
+        modal.remove();
+    }
+
+    function completeCapricornForScorpio() {
+        player.completedCards.push(card);
+        player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+        
+        if (isScorpioAttempt) {
+            completeScorpioIfAttempted(playerId, card);
+            showActionFeedback('Capricorn success! Both Capricorn and Scorpio completed!', true);
+        } else {
+            showActionFeedback('Capricorn success!', true);
+        }
+        
+        player.selectedCard = null;
+        if (!isScorpioAttempt) {
+            player.capricornAttempt = null;
+        }
+        
+        cleanup();
+        
+        updateGameDisplay();
+        setTimeout(() => {
+            refillToThree(gameState, playerId);
+            checkWinCondition();
+            updateGameDisplay();
+            endTurn();
+        }, 1000);
+    }
+
+    function handleForsakeFire() {
+        if (fireCards.length > 0) {
+            const fireCard = fireCards[0];
+            player.activeCards = player.activeCards.filter(c => c.id !== fireCard.id);
+            gameState.discardPile.push(fireCard);
+            showActionFeedback('Capricorn success: forsook a Fire sign.', true);
+            completeCapricornForScorpio();
+        }
+    }
+
+    function handleDrawEarth() {
+        let foundEarth = false;
+
+        for (let i = 0; i < 3; i++) {
+            if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
+            if (gameState.deck.length === 0) break;
+
+            const topCard = gameState.deck[gameState.deck.length - 1];
+            if (topCard.element === 'earth') {
+                const gained = gameState.deck.pop();
+                player.activeCards.push(gained);
+                showActionFeedback('Capricorn success: gained an Earth sign!', true);
+                foundEarth = true;
+                break;
+            } else {
+                const discarded = gameState.deck.pop();
+                gameState.discardPile.push(discarded);
+            }
+        }
+
+        if (!foundEarth) {
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            } else {
+                showActionFeedback('Capricorn first attempt failed. You have until your next turn to try again.', false);
+                player.selectedCard = null;
+                cleanup();
+                updateGameDisplay();
+                setTimeout(() => {
+                    refillToThree(gameState, playerId);
                     checkWinCondition();
+                    updateGameDisplay();
                     endTurn();
+                }, 1000);
+            }
+        } else {
+            completeCapricornForScorpio();
+        }
+    }
+
+    if (forsakeFireBtn) {
+        forsakeFireBtn.addEventListener('click', handleForsakeFire);
+    }
+
+    drawEarthBtn.addEventListener('click', handleDrawEarth);
+
+    closeBtn.addEventListener('click', function() {
+        cleanup();
+        player.selectedCard = null;
+        if (!isScorpioAttempt) {
+            player.capricornAttempt = null;
+        } else {
+            handleScorpioFailure();
+        }
+        updateGameDisplay();
+    });
+    
+    cancelBtn.addEventListener('click', function() {
+        cleanup();
+        player.selectedCard = null;
+        if (!isScorpioAttempt) {
+            player.capricornAttempt = null;
+        } else {
+            handleScorpioFailure();
+        }
+        updateGameDisplay();
+    });
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            cleanup();
+            player.selectedCard = null;
+            if (!isScorpioAttempt) {
+                player.capricornAttempt = null;
+            } else {
+                handleScorpioFailure();
+            }
+            updateGameDisplay();
+        }
+    });
+}
+
+    function handleCapricornFinalTry(playerId, card, isScorpioAttempt = false) {
+        const player = gameState.players[playerId];
+        const fireCards = player.activeCards.filter(c => c.element === 'fire' && c.id !== card.id);
+        
+        const modalHtml = `
+            <div class="modal-overlay" id="capricorn-final-modal" style="display: block;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">${isScorpioAttempt ? 'Scorpio Targeting: ' : ''}Capricorn Challenge (Final Attempt)</h2>
+                        <button class="close-modal" id="close-capricorn-final">&times;</button>
+                    </div>
+                    <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
+                        ${fireCards.length > 0 ? 
+                            'Choose how to complete Capricorn:' : 
+                            'No Fire cards to forsake. Try to draw an Earth card:'}
+                    </p>
+                    <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                        ${fireCards.length > 0 ? 
+                            `<button class="btn btn-primary" id="capricorn-final-forsake-fire">Forsake Fire Sign</button>` : 
+                            ''}
+                        <button class="btn btn-primary" id="capricorn-final-draw-earth">Try to Draw Earth</button>
+                    </div>
+                    <div class="modal-buttons-row">
+                        <button class="btn btn-secondary" id="capricorn-final-cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+        const modal = document.getElementById('capricorn-final-modal');
+        const closeBtn = document.getElementById('close-capricorn-final');
+        const forsakeFireBtn = document.getElementById('capricorn-final-forsake-fire');
+        const drawEarthBtn = document.getElementById('capricorn-final-draw-earth');
+        const cancelBtn = document.getElementById('capricorn-final-cancel');
+
+        function cleanup() {
+            modal.remove();
+        }
+
+        function completeCapricorn() {
+            player.completedCards.push(card);
+            player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+            
+            if (isScorpioAttempt) {
+                completeScorpioIfAttempted(playerId, card);
+                showActionFeedback('Capricorn success! Both Capricorn and Scorpio completed!', true);
+            } else {
+                showActionFeedback('Capricorn success!', true);
+            }
+
+            player.selectedCard = null;
+            player.capricornAttempt = null;
+            
+            cleanup();
+            
+            updateGameDisplay();
+            setTimeout(() => {
+                refillToThree(gameState, playerId);
+                checkWinCondition();
+                updateGameDisplay();
+                endTurn();
+            }, 1000);
+        }
+
+        function handleForsakeFire() {
+            if (fireCards.length > 0) {
+                const fireCard = fireCards[0];
+                player.activeCards = player.activeCards.filter(c => c.id !== fireCard.id);
+                gameState.discardPile.push(fireCard);
+                completeCapricorn();
+            }
+        }
+
+        function handleDrawEarth() {
+            let foundEarth = false;
+
+            for (let i = 0; i < 3; i++) {
+                if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
+                if (gameState.deck.length === 0) break;
+
+                const topCard = gameState.deck[gameState.deck.length - 1];
+                if (topCard.element === 'earth') {
+                    const gained = gameState.deck.pop();
+                    player.activeCards.push(gained);
+                    foundEarth = true;
+                    break;
+                } else {
+                    const discarded = gameState.deck.pop();
+                    gameState.discardPile.push(discarded);
+                }
+            }
+
+            if (!foundEarth) {
+                showActionFeedback('Capricorn failed: No Earth sign found.', false);
+                player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+                gameState.discardPile.push(card);
+                
+                if (isScorpioAttempt) {
+                    handleScorpioFailure();
+                } else {
+                    player.selectedCard = null;
+                    player.capricornAttempt = null;
+                    cleanup();
+                    
+                    updateGameDisplay();
+                    setTimeout(() => {
+                        refillToThree(gameState, playerId);
+                        checkWinCondition();
+                        updateGameDisplay();
+                        endTurn();
+                    }, 1000);
+                }
+            } else {
+                completeCapricorn();
+            }
+        }
+
+        if (forsakeFireBtn) {
+            forsakeFireBtn.addEventListener('click', handleForsakeFire);
+        }
+
+        drawEarthBtn.addEventListener('click', handleDrawEarth);
+
+        closeBtn.addEventListener('click', function() {
+            cleanup();
+            player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+            gameState.discardPile.push(card);
+            
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            } else {
+                player.selectedCard = null;
+                player.capricornAttempt = null;
+                showActionFeedback('Capricorn failed: Final attempt cancelled.', false);
+                
+                updateGameDisplay();
+                setTimeout(() => {
+                    refillToThree(gameState, playerId);
+                    checkWinCondition();
+                    updateGameDisplay();
+                    endTurn();
+                }, 1000);
+            }
+        });
+        
+        cancelBtn.addEventListener('click', function() {
+            cleanup();
+            player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+            gameState.discardPile.push(card);
+            
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            } else {
+                player.selectedCard = null;
+                player.capricornAttempt = null;
+                showActionFeedback('Capricorn failed: Final attempt cancelled.', false);
+                
+                updateGameDisplay();
+                setTimeout(() => {
+                    refillToThree(gameState, playerId);
+                    checkWinCondition();
+                    updateGameDisplay();
+                    endTurn();
+                }, 1000);
+            }
+        });
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                cleanup();
+                player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+                gameState.discardPile.push(card);
+                
+                if (isScorpioAttempt) {
+                    handleScorpioFailure();
+                } else {
+                    player.selectedCard = null;
+                    player.capricornAttempt = null;
+                    showActionFeedback('Capricorn failed: Final attempt cancelled.', false);
+                    
+                    updateGameDisplay();
+                    setTimeout(() => {
+                        refillToThree(gameState, playerId);
+                        checkWinCondition();
+                        updateGameDisplay();
+                        endTurn();
+                    }, 1000);
+                }
+            }
+        });
+    }
+
+function handleAquariusChallenge(playerId, card, isScorpioAttempt = false) {
+    const player = gameState.players[playerId];
+    const waterCards = player.activeCards.filter(c => c.element === 'water' && c.id !== card.id);
+    
+    if (player.aquariusAttempt && !isScorpioAttempt) {
+        handleAquariusFinalTry(playerId, card, isScorpioAttempt);
+        return;
+    }
+    
+    if (!isScorpioAttempt) {
+        player.aquariusAttempt = {
+            cardId: card.id,
+            waterCards: waterCards.map(c => c.id),
+            attemptNumber: 1
+        };
+    }
+
+    const modalHtml = `
+        <div class="modal-overlay" id="aquarius-modal" style="display: block;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">${isScorpioAttempt ? 'Scorpio Targeting: ' : ''}Aquarius Challenge ${!isScorpioAttempt && player.aquariusAttempt ? '(First Attempt)' : ''}</h2>
+                    <button class="close-modal" id="close-aquarius">&times;</button>
+                </div>
+                <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
+                    ${waterCards.length > 0 ? 
+                        'Choose how to complete Aquarius:' : 
+                        'No Water cards to forsake. Try to draw an Air card:'}
+                </p>
+                <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                    ${waterCards.length > 0 ? 
+                        `<button class="btn btn-primary" id="aquarius-forsake-water">Forsake Water Sign</button>` : 
+                        ''}
+                    <button class="btn btn-primary" id="aquarius-draw-air">Try to Draw Air</button>
+                </div>
+                <div class="modal-buttons-row">
+                    <button class="btn btn-secondary" id="aquarius-cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    const modal = document.getElementById('aquarius-modal');
+    const closeBtn = document.getElementById('close-aquarius');
+    const forsakeWaterBtn = document.getElementById('aquarius-forsake-water');
+    const drawAirBtn = document.getElementById('aquarius-draw-air');
+    const cancelBtn = document.getElementById('aquarius-cancel');
+
+    function cleanup() {
+        modal.remove();
+    }
+
+    function completeAquariusForScorpio() {
+        player.completedCards.push(card);
+        player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+        
+        if (isScorpioAttempt) {
+            completeScorpioIfAttempted(playerId, card);
+            showActionFeedback('Aquarius success! Both Aquarius and Scorpio completed!', true);
+        } else {
+            showActionFeedback('Aquarius success!', true);
+        }
+        
+        player.selectedCard = null;
+        if (!isScorpioAttempt) {
+            player.aquariusAttempt = null;
+        }
+        
+        cleanup();
+        
+        updateGameDisplay();
+        setTimeout(() => {
+            refillToThree(gameState, playerId);
+            checkWinCondition();
+            updateGameDisplay();
+            endTurn();
+        }, 1000);
+    }
+
+    function handleForsakeWater() {
+        if (waterCards.length > 0) {
+            const waterCard = waterCards[0];
+            player.activeCards = player.activeCards.filter(c => c.id !== waterCard.id);
+            gameState.discardPile.push(waterCard);
+            showActionFeedback('Aquarius success: forsook a Water sign.', true);
+            completeAquariusForScorpio();
+        }
+    }
+
+    function handleDrawAir() {
+        let foundAir = false;
+
+        for (let i = 0; i < 3; i++) {
+            if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
+            if (gameState.deck.length === 0) break;
+
+            const topCard = gameState.deck[gameState.deck.length - 1];
+            if (topCard.element === 'air') {
+                const gained = gameState.deck.pop();
+                player.activeCards.push(gained);
+                showActionFeedback('Aquarius success: gained an Air sign!', true);
+                foundAir = true;
+                break;
+            } else {
+                const discarded = gameState.deck.pop();
+                gameState.discardPile.push(discarded);
+            }
+        }
+
+        if (!foundAir) {
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            } else {
+                showActionFeedback('Aquarius first attempt failed. You have until your next turn to try again.', false);
+                player.selectedCard = null;
+                cleanup();
+                updateGameDisplay();
+                setTimeout(() => {
+                    refillToThree(gameState, playerId);
+                    checkWinCondition();
+                    updateGameDisplay();
+                    endTurn();
+                }, 1000);
+            }
+        } else {
+            completeAquariusForScorpio();
+        }
+    }
+
+    if (forsakeWaterBtn) {
+        forsakeWaterBtn.addEventListener('click', handleForsakeWater);
+    }
+
+    drawAirBtn.addEventListener('click', handleDrawAir);
+
+    closeBtn.addEventListener('click', function() {
+        cleanup();
+        player.selectedCard = null;
+        if (!isScorpioAttempt) {
+            player.aquariusAttempt = null;
+        } else {
+            handleScorpioFailure();
+        }
+        updateGameDisplay();
+    });
+    
+    cancelBtn.addEventListener('click', function() {
+        cleanup();
+        player.selectedCard = null;
+        if (!isScorpioAttempt) {
+            player.aquariusAttempt = null;
+        } else {
+            handleScorpioFailure();
+        }
+        updateGameDisplay();
+    });
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            cleanup();
+            player.selectedCard = null;
+            if (!isScorpioAttempt) {
+                player.aquariusAttempt = null;
+            } else {
+                handleScorpioFailure();
+            }
+            updateGameDisplay();
+        }
+    });
+}
+
+function handleAquariusFinalTry(playerId, card, isScorpioAttempt = false) {
+    const player = gameState.players[playerId];
+    const waterCards = player.activeCards.filter(c => c.element === 'water' && c.id !== card.id);
+    
+    const modalHtml = `
+        <div class="modal-overlay" id="aquarius-final-modal" style="display: block;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">${isScorpioAttempt ? 'Scorpio Targeting: ' : ''}Aquarius Challenge (Final Attempt)</h2>
+                    <button class="close-modal" id="close-aquarius-final">&times;</button>
+                </div>
+                <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
+                    ${waterCards.length > 0 ? 
+                        'Choose how to complete Aquarius:' : 
+                        'No Water cards to forsake. Try to draw an Air card:'}
+                </p>
+                <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px;">
+                    ${waterCards.length > 0 ? 
+                        `<button class="btn btn-primary" id="aquarius-final-forsake-water">Forsake Water Sign</button>` : 
+                        ''}
+                    <button class="btn btn-primary" id="aquarius-final-draw-air">Try to Draw Air</button>
+                </div>
+                <div class="modal-buttons-row">
+                    <button class="btn btn-secondary" id="aquarius-final-cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+    const modal = document.getElementById('aquarius-final-modal');
+    const closeBtn = document.getElementById('close-aquarius-final');
+    const forsakeWaterBtn = document.getElementById('aquarius-final-forsake-water');
+    const drawAirBtn = document.getElementById('aquarius-final-draw-air');
+    const cancelBtn = document.getElementById('aquarius-final-cancel');
+
+    function cleanup() {
+        modal.remove();
+    }
+
+    function completeAquarius() {
+        player.completedCards.push(card);
+        player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+        
+        if (isScorpioAttempt) {
+            completeScorpioIfAttempted(playerId, card);
+            showActionFeedback('Aquarius success! Both Aquarius and Scorpio completed!', true);
+        } else {
+            showActionFeedback('Aquarius success!', true);
+        }
+
+        player.selectedCard = null;
+        player.aquariusAttempt = null;
+        
+        cleanup();
+        
+        updateGameDisplay();
+        setTimeout(() => {
+            refillToThree(gameState, playerId);
+            checkWinCondition();
+            updateGameDisplay();
+            endTurn();
+        }, 1000);
+    }
+
+    function handleForsakeWater() {
+        if (waterCards.length > 0) {
+            const waterCard = waterCards[0];
+            player.activeCards = player.activeCards.filter(c => c.id !== waterCard.id);
+            gameState.discardPile.push(waterCard);
+            completeAquarius();
+        }
+    }
+
+    function handleDrawAir() {
+        let foundAir = false;
+
+        for (let i = 0; i < 3; i++) {
+            if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
+            if (gameState.deck.length === 0) break;
+
+            const topCard = gameState.deck[gameState.deck.length - 1];
+            if (topCard.element === 'air') {
+                const gained = gameState.deck.pop();
+                player.activeCards.push(gained);
+                foundAir = true;
+                break;
+            } else {
+                const discarded = gameState.deck.pop();
+                gameState.discardPile.push(discarded);
+            }
+        }
+
+        if (!foundAir) {
+            showActionFeedback('Aquarius failed: No Air sign found.', false);
+            player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+            gameState.discardPile.push(card);
+            
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            } else {
+                player.selectedCard = null;
+                player.aquariusAttempt = null;
+                cleanup();
+                
+                updateGameDisplay();
+                setTimeout(() => {
+                    refillToThree(gameState, playerId);
+                    checkWinCondition();
+                    updateGameDisplay();
+                    endTurn();
+                }, 1000);
+            }
+        } else {
+            completeAquarius();
+        }
+    }
+
+    if (forsakeWaterBtn) {
+        forsakeWaterBtn.addEventListener('click', handleForsakeWater);
+    }
+
+    drawAirBtn.addEventListener('click', handleDrawAir);
+
+    closeBtn.addEventListener('click', function() {
+        cleanup();
+        player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+        gameState.discardPile.push(card);
+        
+        if (isScorpioAttempt) {
+            handleScorpioFailure();
+        } else {
+            player.selectedCard = null;
+            player.aquariusAttempt = null;
+            showActionFeedback('Aquarius failed: Final attempt cancelled.', false);
+            
+            updateGameDisplay();
+            setTimeout(() => {
+                refillToThree(gameState, playerId);
+                checkWinCondition();
+                updateGameDisplay();
+                endTurn();
+            }, 1000);
+        }
+    });
+    
+    cancelBtn.addEventListener('click', function() {
+        cleanup();
+        player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+        gameState.discardPile.push(card);
+        
+        if (isScorpioAttempt) {
+            handleScorpioFailure();
+        } else {
+            player.selectedCard = null;
+            player.aquariusAttempt = null;
+            showActionFeedback('Aquarius failed: Final attempt cancelled.', false);
+            
+            updateGameDisplay();
+            setTimeout(() => {
+                refillToThree(gameState, playerId);
+                checkWinCondition();
+                updateGameDisplay();
+                endTurn();
+            }, 1000);
+        }
+    });
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            cleanup();
+            player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+            gameState.discardPile.push(card);
+            
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            } else {
+                player.selectedCard = null;
+                player.aquariusAttempt = null;
+                showActionFeedback('Aquarius failed: Final attempt cancelled.', false);
+                
+                updateGameDisplay();
+                setTimeout(() => {
+                    refillToThree(gameState, playerId);
+                    checkWinCondition();
+                    updateGameDisplay();
+                    endTurn();
+                }, 1000);
+            }
+        }
+    });
+}
+
+    function handleLeoChallenge(playerId, card, isScorpioAttempt = false) {
+        const modalHtml = `
+            <div class="modal-overlay" id="leo-modal" style="display: block;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">${isScorpioAttempt ? 'Scorpio Targeting: ' : ''}Predict Next Element</h2>
+                        <button class="close-modal" id="close-leo">&times;</button>
+                    </div>
+                    <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
+                        Predict the element of the next card drawn from deck:
+                    </p>
+                    <div class="challenge-buttons">
+                        <button class="btn btn-primary prediction-choice" data-element="earth">
+                            <i class="fas fa-mountain"></i> Earth
+                        </button>
+                        <button class="btn btn-primary prediction-choice" data-element="air">
+                            <i class="fas fa-wind"></i> Air
+                        </button>
+                        <button class="btn btn-primary prediction-choice" data-element="fire">
+                            <i class="fas fa-fire"></i> Fire
+                        </button>
+                        <button class="btn btn-primary prediction-choice" data-element="water">
+                            <i class="fas fa-tint"></i> Water
+                        </button>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-secondary" id="leo-cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+        const modal = document.getElementById('leo-modal');
+        const closeBtn = document.getElementById('close-leo');
+        const cancelBtn = document.getElementById('leo-cancel');
+        const choiceBtns = document.querySelectorAll('.prediction-choice');
+
+        function cleanup() {
+            modal.remove();
+        }
+
+        choiceBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const predictedElement = this.getAttribute('data-element');
+                cleanup();
+                resolveLeoPrediction(playerId, card, predictedElement, isScorpioAttempt);
+            });
+        });
+
+        closeBtn.addEventListener('click', function() {
+            cleanup();
+            gameState.players[playerId].selectedCard = null;
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            }
+            updateGameDisplay();
+        });
+        
+        cancelBtn.addEventListener('click', function() {
+            cleanup();
+            gameState.players[playerId].selectedCard = null;
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            }
+            updateGameDisplay();
+        });
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                cleanup();
+                gameState.players[playerId].selectedCard = null;
+                if (isScorpioAttempt) {
+                    handleScorpioFailure();
                 }
                 updateGameDisplay();
-                return;
             }
+        });
+    }
 
-            if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
-            if (gameState.deck.length === 0) {
-                showActionFeedback("No cards left in the deck!", false);
-                return;
+    function resolveLeoPrediction(playerId, card, predictedElement, isScorpioAttempt = false) {
+        const player = gameState.players[playerId];
+
+        if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
+        if (gameState.deck.length === 0) {
+            showActionFeedback("Prediction failed: no cards in deck", false);
+            player.selectedCard = null;
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
             }
-            const newCard = gameState.deck.pop();
+            updateGameDisplay();
+            return;
+        }
+
+        const nextCard = gameState.deck[gameState.deck.length - 1];
+        const actualElement = nextCard.element;
+
+        if (predictedElement === actualElement) {
+            player.completedCards.push(card);
+            player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+            
+            if (isScorpioAttempt) {
+                completeScorpioIfAttempted(playerId, card);
+                showActionFeedback(`Correct! Next card was ${actualElement}. Both Leo and Scorpio completed!`, true);
+            } else {
+                showActionFeedback(`Correct! Next card was ${actualElement}. ${card.name} completed!`, true);
+            }
+        } else {
+            const matchingCards = player.activeCards.filter(c => c.element === actualElement && c.id !== card.id);
+            matchingCards.forEach(lostCard => {
+                player.activeCards = player.activeCards.filter(c => c.id !== lostCard.id);
+                gameState.discardPile.push(lostCard);
+            });
+            player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+            gameState.discardPile.push(card);
+            
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            } else {
+                showActionFeedback(`Wrong! Next card was ${actualElement}. Lost ${matchingCards.length + 1} card(s).`, false);
+            }
+        }
+
+        player.selectedCard = null;
+        
+        updateGameDisplay();
+        setTimeout(() => {
+            refillToThree(gameState, playerId);
+            checkWinCondition();
+            updateGameDisplay();
+            endTurn();
+        }, 1000);
+    }
+
+
+    function handleCancerChallenge(playerId, card, isScorpioAttempt = false) {
+        const player = gameState.players[playerId];
+        const availableCards = player.activeCards.filter(c => c.id !== card.id);
+
+        if (availableCards.length === 0) {
+            showActionFeedback('Cancer: no card available to offer.', false);
+            player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+            gameState.discardPile.push(card);
+            player.selectedCard = null;
+            
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            }
+            
+            updateGameDisplay();
+            setTimeout(() => {
+                refillToThree(gameState, playerId);
+                checkWinCondition();
+                updateGameDisplay();
+                endTurn();
+            }, 1000);
+            return;
+        }
+
+        const modalHtml = `
+            <div class="modal-overlay" id="cancer-modal" style="display: block;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">${isScorpioAttempt ? 'Scorpio Targeting: ' : ''}Cancer Challenge</h2>
+                        <button class="close-modal" id="close-cancer">&times;</button>
+                    </div>
+                    <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
+                        Select a card to offer to your opponent:
+                    </p>
+                    <div id="cancer-cards-container" class="card-grid-modal"></div>
+                    <div class="modal-buttons-row">
+                        <button class="btn btn-secondary" id="cancer-cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = document.getElementById('cancer-modal');
+        const container = document.getElementById('cancer-cards-container');
+        const closeBtn = document.getElementById('close-cancer');
+        const cancelBtn = document.getElementById('cancer-cancel');
+
+        function cleanup() {
+            modal.remove();
+        }
+
+        function handleCancellation() {
+            cleanup();
+            const player = gameState.players[playerId];
+            player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+            gameState.discardPile.push(card);
+            showActionFeedback('Cancer challenge cancelled: Cancer card forsaken.', false);
+            player.selectedCard = null;
+            
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            }
+            
+            updateGameDisplay();
+            setTimeout(() => {
+                refillToThree(gameState, playerId);
+                checkWinCondition();
+                updateGameDisplay();
+                endTurn();
+            }, 1000);
+        }
+
+        availableCards.forEach(offerCard => {
+            const cardEl = createCardElement(offerCard);
+            cardEl.style.cursor = 'pointer';
+            cardEl.addEventListener('click', function() {
+                gameState.tradeOffer = { 
+                    from: playerId, 
+                    card: offerCard, 
+                    isCancer: true,
+                    cancerSourceCard: card,
+                    isScorpioAttempt: isScorpioAttempt
+                };
+                cleanup();
+                openTradeModalForOffer();
+            });
+            container.appendChild(cardEl);
+        });
+
+        closeBtn.addEventListener('click', handleCancellation);
+        cancelBtn.addEventListener('click', handleCancellation);
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                handleCancellation();
+            }
+        });
+    }
+
+    function handleTaurusChallenge(playerId, card, isScorpioAttempt = false) {
+        const player = gameState.players[playerId];
+        player.taurusActive = true;
+        player.taurusCardId = card.id;
+        player.taurusSnapshot = {
+            active: player.activeCards.map(c => c.id).sort().join(','),
+            completed: player.completedCards.map(c => c.id).sort().join(',')
+        };
+
+        if (isScorpioAttempt) {
+            scorpioAttempt = {
+                scorpioCard: scorpioAttempt ? scorpioAttempt.scorpioCard : null,
+                playerId: playerId,
+                targetCard: card
+            };
+            
+            showActionFeedback("Taurus: Avoid trades and retrogrades until your next turn. Scorpio attempt in progress...", true);
+        } else {
+            showActionFeedback("Taurus: Avoid trades and retrogrades until your next turn.", true);
+        }
+        
+        player.selectedCard = null;
+        updateGameDisplay();
+        endTurn();
+    }
+
+    function handleGeminiChallenge(playerId, card, isScorpioAttempt = false) {
+        const player = gameState.players[playerId];
+        player.geminiActive = true;
+        player.geminiCardId = card.id;
+        player.geminiTurnsRemaining = 2;
+        player.geminiCopyMove = null;
+
+        if (isScorpioAttempt) {
+            scorpioAttempt = {
+                scorpioCard: scorpioAttempt ? scorpioAttempt.scorpioCard : null,
+                playerId: playerId,
+                targetCard: card
+            };
+            
+            showActionFeedback("Gemini: Copy opponent's moves for two turns. Scorpio attempt in progress...", true);
+        } else {
+            showActionFeedback("Gemini: Copy opponent's moves for two turns.", true);
+        }
+        
+        player.selectedCard = null;
+        updateGameDisplay();
+        endTurn();
+    }
+
+    function handlePiscesChallenge(playerId, card, isScorpioAttempt = false) {
+        const player = gameState.players[playerId];
+        player.piscesActive = true;
+        player.piscesCardId = card.id;
+        player.piscesTurnsRemaining = 1;
+
+        if (isScorpioAttempt) {
+            scorpioAttempt = {
+                scorpioCard: scorpioAttempt ? scorpioAttempt.scorpioCard : null,
+                playerId: playerId,
+                targetCard: card
+            };
+            
+            showActionFeedback("Pisces: Keep this card active for one turn. Your cards are revealed. Scorpio attempt in progress...", true);
+        } else {
+            showActionFeedback("Pisces: Keep this card active for one turn. Your cards are revealed.", true);
+        }
+        
+        player.selectedCard = null;
+        updateGameDisplay();
+        endTurn();
+    }
+
+    function handleLibraChallenge(playerId, card, isScorpioAttempt = false) {
+        const player = gameState.players[playerId];
+        
+        const allElements = new Set();
+        const allCards = [...player.activeCards, ...player.completedCards];
+        
+        allCards.forEach(c => {
+            if (c.element && c.element !== 'retrograde') {
+                allElements.add(c.element);
+            }
+        });
+        
+        if (allElements.size >= 4) {
+            player.completedCards.push(card);
+            player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+            
+            if (isScorpioAttempt) {
+                completeScorpioIfAttempted(playerId, card);
+                showActionFeedback("Libra completed! Both Libra and Scorpio completed!", true);
+            } else {
+                showActionFeedback("Libra completed! You have all elements.", true);
+            }
+        } else {
+            player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+            gameState.discardPile.push(card);
+            
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            } else {
+                showActionFeedback("Libra failed! You don't have all elements. Card forsaken.", false);
+            }
+        }
+        
+        player.selectedCard = null;
+        
+        updateGameDisplay();
+        setTimeout(() => {
+            refillToThree(gameState, playerId);
+            checkWinCondition();
+            updateGameDisplay();
+            endTurn();
+        }, 1000);
+    }
+
+    function handleSagittariusChallenge(playerId, card, isScorpioAttempt = false) {
+        const player = gameState.players[playerId];
+        const opponentId = playerId === 1 ? 2 : 1;
+        const opponent = gameState.players[opponentId];
+        
+        if (player.activeCards.length === 0) {
+            showActionFeedback("You have no cards to offer.", false);
+            player.selectedCard = null;
+            if (isScorpioAttempt) {
+                handleScorpioFailure();
+            }
+            updateGameDisplay();
+            return;
+        }
+
+        gameState.tradeOffer = { 
+            from: playerId, 
+            card: null,
+            isSagittarius: true,
+            sagittariusSourceCard: card,
+            isScorpioAttempt: isScorpioAttempt
+        };
+        
+        openSagittariusSelectionModal();
+    }
+
+    function openSagittariusSelectionModal() {
+        const offer = gameState.tradeOffer;
+        const playerId = offer.from;
+        const player = gameState.players[playerId];
+        const opponentId = playerId === 1 ? 2 : 1;
+        
+        const modalHtml = `
+            <div class="modal-overlay" id="sagittarius-select-modal" style="display: block;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title">${offer.isScorpioAttempt ? 'Scorpio Targeting: ' : ''}Sagittarius Challenge</h2>
+                        <button class="close-modal" id="close-sagittarius-select">&times;</button>
+                    </div>
+                    <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
+                        Player ${opponentId}, select a card from Player ${playerId}'s active cards to take:
+                    </p>
+                    <div id="sagittarius-select-container" class="card-grid-modal"></div>
+                    <div class="modal-buttons-row">
+                        <button class="btn btn-secondary" id="sagittarius-select-cancel">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        const modal = document.getElementById('sagittarius-select-modal');
+        const container = document.getElementById('sagittarius-select-container');
+        const closeBtn = document.getElementById('close-sagittarius-select');
+        const cancelBtn = document.getElementById('sagittarius-select-cancel');
+
+        function cleanup() {
+            modal.remove();
+        }
+
+        function handleCancellation() {
+            cleanup();
+            const player = gameState.players[playerId];
+            const card = gameState.tradeOffer.sagittariusSourceCard;
+            player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+            gameState.discardPile.push(card);
+            showActionFeedback('Sagittarius declined: Sagittarius card forsaken.', false);
+            player.selectedCard = null;
+            
+            if (gameState.tradeOffer.isScorpioAttempt) {
+                handleScorpioFailure();
+            }
+            
+            gameState.tradeOffer = null;
+            updateGameDisplay();
+            setTimeout(() => {
+                refillToThree(gameState, playerId);
+                checkWinCondition();
+                updateGameDisplay();
+                endTurn();
+            }, 1000);
+        }
+
+        player.activeCards.forEach(activeCard => {
+            const cardEl = createCardElement(activeCard);
+            cardEl.classList.add('hidden');
+            cardEl.style.backgroundImage = "url('images/card_back.png')";
+            cardEl.style.cursor = 'pointer';
+            cardEl.addEventListener('click', function() {
+                gameState.tradeOffer.card = activeCard;
+                cleanup();
+                openSagittariusTradeModal();
+            });
+            container.appendChild(cardEl);
+        });
+
+        closeBtn.addEventListener('click', handleCancellation);
+        cancelBtn.addEventListener('click', handleCancellation);
+
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                handleCancellation();
+            }
+        });
+    }
+
+function openSagittariusTradeModal() {
+    const offer = gameState.tradeOffer;
+    const playerId = offer.from;
+    const opponentId = playerId === 1 ? 2 : 1;
+    const opponent = gameState.players[opponentId];
+    
+    const modalHtml = `
+        <div class="modal-overlay" id="sagittarius-trade-modal" style="display: block;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">${offer.isScorpioAttempt ? 'Scorpio Targeting: ' : ''}Sagittarius Trade</h2>
+                    <button class="close-modal" id="close-sagittarius-trade">&times;</button>
+                </div>
+                <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
+                    Player ${opponentId}, select a card to give to Player ${playerId} in exchange:
+                </p>
+                <div id="sagittarius-trade-container" class="card-grid-modal"></div>
+                <div class="modal-buttons-row">
+                    <button class="btn btn-secondary" id="sagittarius-trade-cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const modal = document.getElementById('sagittarius-trade-modal');
+    const container = document.getElementById('sagittarius-trade-container');
+    const closeBtn = document.getElementById('close-sagittarius-trade');
+    const cancelBtn = document.getElementById('sagittarius-trade-cancel');
+
+    function cleanup() {
+        modal.remove();
+    }
+
+    function handleCancellation() {
+        cleanup();
+        const player = gameState.players[playerId];
+        const card = gameState.tradeOffer.sagittariusSourceCard;
+        player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+        gameState.discardPile.push(card);
+        showActionFeedback('Sagittarius trade cancelled: Sagittarius card forsaken.', false);
+        player.selectedCard = null;
+        
+        if (gameState.tradeOffer.isScorpioAttempt) {
+            handleScorpioFailure();
+        }
+        
+        gameState.tradeOffer = null;
+        updateGameDisplay();
+        setTimeout(() => {
+            refillToThree(gameState, playerId);
+            checkWinCondition();
+            updateGameDisplay();
+            endTurn();
+        }, 1000);
+    }
+
+    opponent.activeCards.forEach(card => {
+        const cardEl = createCardElement(card, false, false, opponentId);
+        cardEl.style.cursor = 'pointer';
+        cardEl.addEventListener('click', function() {
+            const player = gameState.players[playerId];
+            const opponent = gameState.players[opponentId];
+            const offeredCard = gameState.tradeOffer.card;
+            const chosenCard = card;
+            const sagittariusCard = gameState.tradeOffer.sagittariusSourceCard;
+            
+            player.activeCards = player.activeCards.filter(c => c.id !== offeredCard.id);
+            opponent.activeCards = opponent.activeCards.filter(c => c.id !== chosenCard.id);
+            
+            player.activeCards.push(chosenCard);
+            opponent.activeCards.push(offeredCard);
+            
+            if (offeredCard.id === sagittariusCard.id) {
+                showActionFeedback('Sagittarius was taken by opponent - must attempt again!', false);
+                
+                if (gameState.tradeOffer.isScorpioAttempt) {
+                    handleScorpioFailure();
+                }
+            } else {
+                player.completedCards.push(sagittariusCard);
+                player.activeCards = player.activeCards.filter(c => c.id !== sagittariusCard.id);
+                
+                if (gameState.tradeOffer.isScorpioAttempt) {
+                    completeScorpioIfAttempted(playerId, sagittariusCard);
+                    showActionFeedback('Sagittarius trade completed! Both Sagittarius and Scorpio completed.', true);
+                } else {
+                    showActionFeedback('Sagittarius trade completed! Sagittarius completed.', true);
+                }
+            }
+            
+            cleanup();
+            gameState.tradeOffer = null;
+            updateGameDisplay();
+            
+            setTimeout(() => {
+                refillToThree(gameState, playerId);
+                refillToThree(gameState, opponentId);
+                checkWinCondition();
+                updateGameDisplay();
+                endTurn();
+            }, 1000);
+        });
+        container.appendChild(cardEl);
+    });
+
+    closeBtn.addEventListener('click', handleCancellation);
+    cancelBtn.addEventListener('click', handleCancellation);
+
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            handleCancellation();
+        }
+    });
+}
+
+    function attemptChallenge(playerId) {
+        if (playerId !== gameState.currentPlayer) {
+            showActionFeedback("It's not your turn!", false);
+            return;
+        }
+
+        const player = gameState.players[playerId];
+
+        if (!player.selectedCard) {
+            showActionFeedback("Select a card first!", false);
+            return;
+        }
+
+        const card = player.selectedCard;
+
+        const alreadyCompleted = player.completedCards.some(completedCard => 
+            completedCard.name === card.name
+        );
+
+        if (alreadyCompleted) {
+            showActionFeedback(`You already have ${card.name} completed! You must trade or forsake it.`, false);
+            player.selectedCard = null;
+            updateGameDisplay();
+            return;
+        }
+
+        if (card.element === 'retrograde') {
+            showActionFeedback("Retrograde cards cannot be attempted as challenges!", false);
+            player.selectedCard = null;
+            updateGameDisplay();
+            return;
+        }
+
+        player.lastAction = 'challenge';
+        player.lastActionDetails = { cardName: card.name };
+
+        handleCardSpecificChallenge(playerId, card, false);
+    }
+
+    function forsakeAndDraw(playerId) {
+        if (playerId !== gameState.currentPlayer) {
+            showActionFeedback("It's not your turn!", false);
+            return;
+        }
+
+        const player = gameState.players[playerId];
+        if (!player.selectedCard) {
+            showActionFeedback("Please select a card to forsake first!", false);
+            return;
+        }
+
+        player.lastAction = 'forsake';
+        player.lastActionDetails = { cardName: player.selectedCard.name };
+
+        const discardedCard = player.selectedCard;
+
+        player.activeCards = player.activeCards.filter(c => c.id !== discardedCard.id);
+        gameState.discardPile.push(discardedCard);
+
+        const newCard = drawUniqueCard(gameState, player);
+        
+        if (newCard) {
+            player.activeCards.push(newCard);
+            showActionFeedback('You forsaked a card and drew a new one.', true);
+        } else {
+            showActionFeedback("No non-duplicate cards available to draw!", false);
+        }
+
+        player.selectedCard = null;
+        
+        refillToThree(gameState, playerId);
+        updateGameDisplay();
+
+        setTimeout(() => {
+            checkWinCondition();
+            endTurn();
+        }, 1000);
+    }
+
+    function drawFromDeck() {
+        const player = gameState.players[gameState.currentPlayer];
+
+        player.lastAction = 'draw';
+        player.lastActionDetails = {};
+
+        if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
+        
+        const newCard = drawUniqueCard(gameState, player);
+
+        if (newCard) {
             player.activeCards.push(newCard);
             showActionFeedback(`Drew ${newCard.name} from the deck`, true);
-            refillToThree(gameState, gameState.currentPlayer);
-            runPostCardChangeChecks();
+        } else {
+            showActionFeedback("No non-duplicate cards available to draw!", false);
+        }
+        
+        refillToThree(gameState, gameState.currentPlayer);
+        updateGameDisplay();
+
+        setTimeout(() => {
+            checkWinCondition();
             endTurn();
+        }, 1000);
+    }
+
+    function useRetrograde(playerId) {
+        if (playerId !== gameState.currentPlayer) {
+            showActionFeedback("It's not your turn!", false);
+            return;
         }
 
-        function useRetrograde(playerId) {
-            if (playerId !== gameState.currentPlayer) {
-                showActionFeedback("It's not your turn!", false);
-                return;
-            }
+        const player = gameState.players[playerId];
+        if (player.usedRetrograde) {
+            showActionFeedback("You have already used your Retrograde this game!", false);
+            return;
+        }
 
-            const player = gameState.players[playerId];
-            if (player.usedRetrograde) {
-                showActionFeedback("You have already used your Retrograde this game!", false);
-                return;
-            }
-            const p1 = gameState.players[1], p2 = gameState.players[2];
-            const toReturn = [];
+        const hasRetrograde = player.activeCards.some(card => card.element === 'retrograde');
+        if (!hasRetrograde) {
+            showActionFeedback("You don't have a Retrograde card!", false);
+            return;
+        }
 
-            p1.completedCards.forEach(c => toReturn.push(c));
-            p2.completedCards.forEach(c => toReturn.push(c));
+        if (player.taurusActive) {
+            showActionFeedback("Taurus restriction: Cannot use Retrograde!", false);
+            return;
+        }
 
-            p1.completedCards = [];
-            p2.completedCards = [];
+        player.lastAction = 'retrograde';
+        player.lastActionDetails = {};
 
-            gameState.deck.push(...toReturn);
-            shuffleDeck(gameState.deck);
+        const retrogradeCard = player.activeCards.find(card => card.element === 'retrograde');
+        if (retrogradeCard) {
+            player.activeCards = player.activeCards.filter(c => c.id !== retrogradeCard.id);
+            gameState.discardPile.push(retrogradeCard);
+        }
 
-            player.usedRetrograde = true;
-            showActionFeedback("Retrograde activated! All completed cards returned to deck.", true);
-            refillToThree(gameState, 1);
-            refillToThree(gameState, 2);
+        const p1 = gameState.players[1], p2 = gameState.players[2];
+        const toReturn = [];
 
-            runPostCardChangeChecks();
+        p1.completedCards.forEach(c => toReturn.push(c));
+        p2.completedCards.forEach(c => toReturn.push(c));
+
+        p1.completedCards = [];
+        p2.completedCards = [];
+
+        gameState.deck.push(...toReturn);
+        shuffleDeck(gameState.deck);
+
+        player.usedRetrograde = true;
+        showActionFeedback("Retrograde activated! All completed cards returned to deck.", true);
+        
+        refillToThree(gameState, 1);
+        refillToThree(gameState, 2);
+        updateGameDisplay();
+
+        setTimeout(() => {
+            checkWinCondition();
             endTurn();
+        }, 1000);
+    }
+
+    function skipTurn(playerId) {
+        if (playerId !== gameState.currentPlayer) {
+            showActionFeedback("It's not your turn!", false);
+            return;
         }
 
-        function skipTurn(playerId) {
-            if (playerId !== gameState.currentPlayer) {
-                showActionFeedback("It's not your turn!", false);
-                return;
+        const player = gameState.players[playerId];
+        player.lastAction = 'skip';
+        player.lastActionDetails = {};
+
+        showActionFeedback("Turn skipped", true);
+        endTurn(); 
+    }
+
+    function initiateTrade(playerId) {
+        if (playerId !== gameState.currentPlayer) {
+            showActionFeedback("It's not your turn!", false);
+            return;
+        }
+
+        const player = gameState.players[playerId];
+        
+        if (player.taurusActive) {
+            showActionFeedback("Taurus restriction: Cannot trade!", false);
+            return;
+        }
+
+        if (!player.selectedCard) {
+            showActionFeedback("Select a card to offer in trade!", false);
+            return;
+        }
+        
+        player.lastAction = 'trade';
+        player.lastActionDetails = { cardName: player.selectedCard.name };
+        
+        gameState.tradeOffer = { from: playerId, card: player.selectedCard };
+        openTradeModalForOffer();
+    }
+
+    function openTradeModalForOffer() {
+        if (!gameState.tradeOffer) return;
+        const fromId = gameState.tradeOffer.from;
+        const offerCard = gameState.tradeOffer.card;
+        const tradeOfferArea = document.getElementById('trade-offer-area');
+
+        tradeOfferArea.innerHTML = '';
+        
+        const offerEl = createCardElement(offerCard);
+        tradeOfferArea.appendChild(offerEl);
+        
+        document.getElementById('trade-modal-title').textContent = `Player ${fromId} offers a trade`;
+
+        document.getElementById('trade-modal').style.display = 'block';
+        document.getElementById('trade-select-responder').style.display = 'none';
+        document.getElementById('trade-responder-cards').innerHTML = '';
+    }
+
+    function closeTradeModal() {
+        if (gameState.tradeOffer) {
+            const player = gameState.players[gameState.tradeOffer.from];
+            if (player.selectedCard) {
+                player.selectedCard = null;
             }
-
-            showActionFeedback("Turn skipped", true);
-            endTurn();
-        }
-
-        function initiateTrade(playerId) {
-            if (playerId !== gameState.currentPlayer) {
-                showActionFeedback("It's not your turn!", false);
-                return;
-            }
-
-            const player = gameState.players[playerId];
-            if (!player.selectedCard) {
-                showActionFeedback("Select a card to offer in trade!", false);
-                return;
-            }
-            gameState.tradeOffer = { from: playerId, card: player.selectedCard };
-            openTradeModalForOffer();
-        }
-
-        function openTradeModalForOffer() {
-            if (!gameState.tradeOffer) return;
-            const fromId = gameState.tradeOffer.from;
-            const offerCard = gameState.tradeOffer.card;
-            const tradeOfferArea = document.getElementById('trade-offer-area');
-
-            tradeOfferArea.innerHTML = '';
-            const offerEl = createCardElement(offerCard);
-            offerEl.classList.remove('hidden');
-            tradeOfferArea.appendChild(offerEl);
-            document.getElementById('trade-modal-title').textContent = `Player ${fromId} offers: ${offerCard.name}`;
-
-            document.getElementById('trade-modal').style.display = 'block';
-            document.getElementById('trade-select-responder').style.display = 'none';
-            document.getElementById('trade-responder-cards').innerHTML = '';
-        }
-
-        function closeTradeModal() {
             gameState.tradeOffer = null;
-            document.getElementById('trade-modal').style.display = 'none';
-            document.getElementById('trade-offer-area').innerHTML = '';
-            document.getElementById('trade-responder-cards').innerHTML = '';
         }
+        document.getElementById('trade-modal').style.display = 'none';
+        document.getElementById('trade-offer-area').innerHTML = '';
+        document.getElementById('trade-responder-cards').innerHTML = '';
+    }
 
-        function tradeAcceptHandler() {
-            const offer = gameState.tradeOffer;
-            if (!offer) return;
-            const responderId = offer.from === 1 ? 2 : 1;
-            const tradeSelectResponder = document.getElementById('trade-select-responder');
-            const tradeResponderCards = document.getElementById('trade-responder-cards');
+    function tradeAcceptHandler() {
+        const offer = gameState.tradeOffer;
+        if (!offer) return;
+        const responderId = offer.from === 1 ? 2 : 1;
+        const responder = gameState.players[responderId];
+        const tradeSelectResponder = document.getElementById('trade-select-responder');
+        const tradeResponderCards = document.getElementById('trade-responder-cards');
 
-            tradeSelectResponder.style.display = 'block';
-            tradeResponderCards.innerHTML = '';
+        tradeSelectResponder.style.display = 'block';
+        tradeResponderCards.innerHTML = '';
 
-            gameState.players[responderId].activeCards.forEach(card => {
-                const clone = createCardElement(card);
-                clone.classList.remove('hidden');
-                clone.style.cursor = 'pointer';
-                clone.addEventListener('click', function() {
-                    performTradeSwap(offer.from, responderId, offer.card, card);
+        responder.activeCards.forEach(card => {
+            const clone = createCardElement(card, false, false, responderId); 
+            clone.style.cursor = 'pointer';
+            clone.addEventListener('click', function() {
+                performTradeSwap(offer.from, responderId, offer.card, card);
 
-                    if (offer.isCancer && offer.cancerSourceCard) {
-                        const cancerPlayer = gameState.players[offer.from];
-                        cancerPlayer.completedCards.push(offer.cancerSourceCard);
-                        cancerPlayer.activeCards = cancerPlayer.activeCards.filter(c => c.id !== offer.cancerSourceCard.id);
-                        resolveOpponentScorpioOnCompletion(offer.from);
+                if (offer.isCancer && offer.cancerSourceCard) {
+                    const cancerPlayer = gameState.players[offer.from];
+                    cancerPlayer.completedCards.push(offer.cancerSourceCard);
+                    cancerPlayer.activeCards = cancerPlayer.activeCards.filter(c => c.id !== offer.cancerSourceCard.id);
+                    
+                    if (offer.isScorpioAttempt) {
+                        completeScorpioIfAttempted(offer.from, offer.cancerSourceCard);
+                        showActionFeedback('Cancer trade accepted! Both Cancer and Scorpio completed!', true);
+                    } else {
                         showActionFeedback('Cancer trade accepted! Cancer completed.', true);
                     }
+                }
 
-                    closeTradeModal();
+                closeTradeModal();
+                updateGameDisplay();
+                showActionFeedback('Trade completed!', true);
+                
+            });
+            tradeResponderCards.appendChild(clone);
+        });
+    }
+
+    function tradeDeclineHandler() {
+        const offer = gameState.tradeOffer;
+        if (offer && offer.isCancer) {
+            const from = gameState.tradeOffer.from;
+            const player = gameState.players[from];
+
+            const cancerCard = gameState.tradeOffer.cancerSourceCard;
+            if (cancerCard) {
+                player.activeCards = player.activeCards.filter(c => c.id !== cancerCard.id);
+                gameState.discardPile.push(cancerCard);
+                showActionFeedback('Cancer trade refused: Cancer card forsaken.', false);
+                
+                if (offer.isScorpioAttempt) {
+                    handleScorpioFailure();
+                } else {
                     updateGameDisplay();
-                    showActionFeedback('Trade completed!', true);
-                    refillToThree(gameState, offer.from);
-                    refillToThree(gameState, responderId);
-                    runPostCardChangeChecks();
-                    endTurn();
+                    setTimeout(() => {
+                        refillToThree(gameState, from);
+                        checkWinCondition();
+                        updateGameDisplay();
+                        endTurn();
+                    }, 1000);
+                }
+            }
+        }
+
+        closeTradeModal();
+    }
+
+    function performTradeSwap(fromId, toId, fromCard, toCard) {
+        const fromPlayer = gameState.players[fromId];
+        const toPlayer = gameState.players[toId];
+        
+        fromPlayer.activeCards = fromPlayer.activeCards.filter(c => c.id !== fromCard.id);
+        toPlayer.activeCards = toPlayer.activeCards.filter(c => c.id !== toCard.id);
+        fromPlayer.activeCards.push(toCard);
+        toPlayer.activeCards.push(fromCard);
+        
+        fromPlayer.selectedCard = null;
+        toPlayer.selectedCard = null;
+        
+        updateGameDisplay();
+
+        setTimeout(() => {
+            refillToThree(gameState, fromId);
+            refillToThree(gameState, toId);
+            updateGameDisplay();
+            endTurn(); 
+        }, 1000);
+    }
+
+    function cancelTrade() {
+        closeTradeModal();
+    }
+
+    function enforceGeminiRequirement(playerId, actionType) {
+        const player = gameState.players[playerId];
+        
+        if (player.geminiActive && player.geminiCopyMove) {
+            if (player.geminiCopyMove.action !== actionType) {
+                showActionFeedback("Gemini failed: You didn't copy the opponent's move!", false);
+                
+                player.activeCards.forEach(card => {
+                    gameState.discardPile.push(card);
                 });
-                tradeResponderCards.appendChild(clone);
+                player.activeCards = [];
+                
+                const geminiCard = allCards.find(c => c.id === player.geminiCardId);
+                if (geminiCard) {
+                    gameState.discardPile.push(geminiCard);
+                }
+                
+                player.geminiActive = false;
+                player.geminiCardId = null;
+                player.geminiCopyMove = null;
+                player.geminiTurnsRemaining = 0;
+                
+                updateGameDisplay();
+                setTimeout(() => {
+                    refillToThree(gameState, playerId);
+                    updateGameDisplay();
+                }, 1000);
+                return false;
+            } else {
+                player.geminiTurnsRemaining--;
+                
+                if (player.geminiTurnsRemaining <= 0) {
+                    const geminiCard = player.activeCards.find(c => c.id === player.geminiCardId);
+                    if (geminiCard) {
+                        player.activeCards = player.activeCards.filter(c => c.id !== geminiCard.id);
+                        player.completedCards.push(geminiCard);
+                        showActionFeedback("Gemini completed after two turns!", true);
+                    }
+                    player.geminiActive = false;
+                    player.geminiCardId = null;
+                    player.geminiCopyMove = null;
+                }
+                
+                player.geminiCopyMove = null;
+                return true;
+            }
+        }
+        return true;
+    }
+
+    function endTurn() {
+        const previousPlayerId = gameState.currentPlayer;
+        const previousPlayer = gameState.players[previousPlayerId];
+        
+        gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
+        
+        const currentPlayer = gameState.players[gameState.currentPlayer];
+        
+        if (currentPlayer.capricornAttempt && currentPlayer.capricornAttempt.attemptNumber === 1) {
+            const capricornCard = currentPlayer.activeCards.find(c => c.id === currentPlayer.capricornAttempt.cardId);
+            if (capricornCard) {
+                handleCapricornFinalTry(gameState.currentPlayer, capricornCard, false);
+            }
+        }
+        
+        if (currentPlayer.aquariusAttempt && currentPlayer.aquariusAttempt.attemptNumber === 1) {
+            const aquariusCard = currentPlayer.activeCards.find(c => c.id === currentPlayer.aquariusAttempt.cardId);
+            if (aquariusCard) {
+                handleAquariusFinalTry(gameState.currentPlayer, aquariusCard, false);
+            }
+        }
+        
+        if (currentPlayer.taurusActive) {
+            const currentSnapshot = {
+                active: currentPlayer.activeCards.map(c => c.id).sort().join(','),
+                completed: currentPlayer.completedCards.map(c => c.id).sort().join(',')
+            };
+
+            if (currentSnapshot.active === currentPlayer.taurusSnapshot.active && 
+                currentSnapshot.completed === currentPlayer.taurusSnapshot.completed) {
+                const taurusCard = currentPlayer.activeCards.find(c => c.id === currentPlayer.taurusCardId);
+                if (taurusCard) {
+                    currentPlayer.activeCards = currentPlayer.activeCards.filter(c => c.id !== currentPlayer.taurusCardId);
+                    currentPlayer.completedCards.push(taurusCard);
+                    showActionFeedback("Taurus completed - restrictions followed!", true);
+                    
+                    if (scorpioAttempt && 
+                        scorpioAttempt.playerId === gameState.currentPlayer &&
+                        scorpioAttempt.targetCard &&
+                        scorpioAttempt.targetCard.id === taurusCard.id) {
+                        completeScorpioIfAttempted(gameState.currentPlayer, taurusCard);
+                    }
+                }
+            } else {
+                const taurusCard = currentPlayer.activeCards.find(c => c.id === currentPlayer.taurusCardId);
+                if (taurusCard) {
+                    currentPlayer.activeCards = currentPlayer.activeCards.filter(c => c.id !== currentPlayer.taurusCardId);
+                    gameState.discardPile.push(taurusCard);
+                }
+                showActionFeedback("Taurus failed - restrictions were violated!", false);
+                
+                if (scorpioAttempt && 
+                    scorpioAttempt.playerId === gameState.currentPlayer &&
+                    scorpioAttempt.targetCard &&
+                    scorpioAttempt.targetCard.id === currentPlayer.taurusCardId) {
+                    handleScorpioFailure();
+                }
+            }
+            
+            currentPlayer.taurusActive = false;
+            currentPlayer.taurusCardId = null;
+            currentPlayer.taurusSnapshot = null;
+        }
+
+        if (currentPlayer.piscesActive) {
+            currentPlayer.piscesTurnsRemaining--;
+            if (currentPlayer.piscesTurnsRemaining <= 0) {
+                const piscesCard = currentPlayer.activeCards.find(c => c.id === currentPlayer.piscesCardId);
+                if (piscesCard) {
+                    currentPlayer.activeCards = currentPlayer.activeCards.filter(c => c.id !== piscesCard.id);
+                    currentPlayer.completedCards.push(piscesCard);
+                    showActionFeedback("Pisces completed after one round!", true);
+                    
+                    if (scorpioAttempt && 
+                        scorpioAttempt.playerId === gameState.currentPlayer &&
+                        scorpioAttempt.targetCard &&
+                        scorpioAttempt.targetCard.id === piscesCard.id) {
+                        completeScorpioIfAttempted(gameState.currentPlayer, piscesCard);
+                    }
+                }
+                currentPlayer.piscesActive = false;
+                currentPlayer.piscesCardId = null;
+            }
+        }
+
+        if (currentPlayer.geminiActive) {
+            if (previousPlayer.lastAction) {
+                currentPlayer.geminiCopyMove = {
+                    action: previousPlayer.lastAction,
+                    details: previousPlayer.lastActionDetails
+                };
+            }
+        }
+
+        if (previousPlayer.geminiActive && previousPlayer.geminiTurnsRemaining <= 0) {
+            const geminiCard = previousPlayer.activeCards.find(c => c.id === previousPlayer.geminiCardId);
+            if (geminiCard) {
+                previousPlayer.activeCards = previousPlayer.activeCards.filter(c => c.id !== geminiCard.id);
+                previousPlayer.completedCards.push(geminiCard);
+                
+                if (scorpioAttempt && 
+                    scorpioAttempt.playerId === previousPlayerId &&
+                    scorpioAttempt.targetCard &&
+                    scorpioAttempt.targetCard.id === geminiCard.id) {
+                    completeScorpioIfAttempted(previousPlayerId, geminiCard);
+                }
+            }
+            previousPlayer.geminiActive = false;
+            previousPlayer.geminiCardId = null;
+            previousPlayer.geminiCopyMove = null;
+        }
+
+        gameState.players[1].selectedCard = null;
+        gameState.players[2].selectedCard = null;
+
+        previousPlayer.lastAction = null;
+        previousPlayer.lastActionDetails = null;
+
+        refillToThree(gameState, gameState.currentPlayer);
+        updateGameDisplay();
+        checkWinCondition();
+    }
+
+    function checkWinCondition() {
+        for (let p = 1; p <= 2; p++) {
+            const player = gameState.players[p];
+            const elementCounts = {};
+
+            player.completedCards.forEach(card => {
+                if (card.element && card.element !== 'retrograde') {
+                    elementCounts[card.element] = (elementCounts[card.element] || 0) + 1;
+                    if (elementCounts[card.element] >= 3) {
+                        const winnerModal = document.getElementById("winner-modal");
+                        const winnerText = document.getElementById("winner-text");
+
+                        winnerText.textContent = `Player ${p} Wins!`;
+                        winnerModal.style.display = "block";
+                        return true;
+                    }
+                }
             });
         }
+        return false;
+    }
 
-        function tradeDeclineHandler() {
-            if (gameState.tradeOffer && gameState.tradeOffer.isCancer) {
-                const from = gameState.tradeOffer.from;
-                const player = gameState.players[from];
-
-                const cancerCard = gameState.tradeOffer.cancerSourceCard;
-                if (cancerCard) {
-                    player.activeCards = player.activeCards.filter(c => c.id !== cancerCard.id);
-                    gameState.discardPile.push(cancerCard);
-                    showActionFeedback('Cancer challenge refused: Cancer card forsaken.', false);
-                }
+    function setupEventListeners() {
+        document.getElementById('attempt-challenge-1').addEventListener('click', () => {
+            if (enforceGeminiRequirement(1, 'challenge')) {
+                attemptChallenge(1);
             }
-
-            closeTradeModal();
-        }
-
-        function performTradeSwap(fromId, toId, fromCard, toCard) {
-            const fromPlayer = gameState.players[fromId];
-            const toPlayer = gameState.players[toId];
-            fromPlayer.activeCards = fromPlayer.activeCards.filter(c => c.id !== fromCard.id);
-            toPlayer.activeCards = toPlayer.activeCards.filter(c => c.id !== toCard.id);
-            fromPlayer.activeCards.push(toCard);
-            toPlayer.activeCards.push(fromCard);
-            fromPlayer.selectedCard = null;
-            toPlayer.selectedCard = null;
-
-            runPostCardChangeChecks();
-        }
-
-        function cancelTrade() {
-            if (gameState.tradeOffer) {
-                gameState.players[gameState.tradeOffer.from].selectedCard = null;
+        });
+        document.getElementById('draw-card-1').addEventListener('click', () => {
+            if (enforceGeminiRequirement(1, 'forsake')) {
+                forsakeAndDraw(1);
             }
-            closeTradeModal();
-        }
-
-        function endTurn() {
-            runPostCardChangeChecks();
-
-            setTimeout(() => {
-                nextTurn();
-            }, 900);
-        }
-
-        function nextTurn() {
-            // Store the previous player before switching turns
-            const previousPlayerId = gameState.currentPlayer;
-            const previousPlayer = gameState.players[previousPlayerId];
-
-            // Switch to next player
-            gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
-
-            // Now check if the NEW current player (the one who just started their turn) has Taurus pending
-            const currentPlayer = gameState.players[gameState.currentPlayer];
-
-            if (currentPlayer.taurusPending && currentPlayer.taurusPendingId) {
-                const currentSnapshot = {
-                    active: currentPlayer.activeCards.map(c => c.id).sort().join(','),
-                    completed: currentPlayer.completedCards.map(c => c.id).sort().join(',')
-                };
-
-                if (currentSnapshot.active === currentPlayer.taurusSnapshot.active && 
-                    currentSnapshot.completed === currentPlayer.taurusSnapshot.completed) {
-
-                    // Taurus completed successfully - move to completed cards
-                    const taurusCard = currentPlayer.activeCards.find(c => c.id === currentPlayer.taurusPendingId);
-                    if (taurusCard) {
-                        currentPlayer.activeCards = currentPlayer.activeCards.filter(c => c.id !== currentPlayer.taurusPendingId);
-                        currentPlayer.completedCards.push(taurusCard);
-                        showActionFeedback("Taurus completed - hand unchanged!", true);
-                        resolveOpponentScorpioOnCompletion(gameState.currentPlayer);
-                    }
-                } else {
-                    // Taurus failed - discard the card
-                    currentPlayer.activeCards = currentPlayer.activeCards.filter(c => c.id !== currentPlayer.taurusPendingId);
-                    const taurusCard = allCards.find(c => c.id === currentPlayer.taurusPendingId);
-                    if (taurusCard) gameState.discardPile.push(taurusCard);
-                    showActionFeedback("Taurus failed - hand was changed!", false);
-                }
-
-                // Reset Taurus state
-                currentPlayer.taurusPending = false;
-                currentPlayer.taurusPendingId = null;
-                currentPlayer.taurusSnapshot = null;
+        });
+        document.getElementById('trade-1').addEventListener('click', () => {
+            if (enforceGeminiRequirement(1, 'trade')) {
+                initiateTrade(1);
             }
-
-            const newPlayer = gameState.players[gameState.currentPlayer];
-            if (newPlayer.skipNextTurn) {
-                newPlayer.skipNextTurn = false;
-                showActionFeedback(`Player ${gameState.currentPlayer} must skip this turn.`, false);
-                endTurn();
-                return;
+        });
+        document.getElementById('retrograde-1').addEventListener('click', () => {
+            if (enforceGeminiRequirement(1, 'retrograde')) {
+                useRetrograde(1);
             }
-
-            gameState.players[1].selectedCard = null;
-            gameState.players[2].selectedCard = null;
-
-            refillToThree(gameState, gameState.currentPlayer);
-            updateGameDisplay();
-            runPostCardChangeChecks();
-        }
-
-        function checkWinCondition() {
-            for (let p = 1; p <= 2; p++) {
-                const player = gameState.players[p];
-                const elementCounts = {};
-
-                // Use a Set to track unique card names in completed cards
-                const uniqueCompletedCards = [];
-                const seenCardNames = new Set();
-
-                player.completedCards.forEach(card => {
-                    if (!seenCardNames.has(card.name)) {
-                        seenCardNames.add(card.name);
-                        uniqueCompletedCards.push(card);
-                    }
-                });
-
-                // Count elements only from unique cards
-                uniqueCompletedCards.forEach(card => {
-                    if (card.element && card.element !== 'retrograde') {
-                        elementCounts[card.element] = (elementCounts[card.element] || 0) + 1;
-                        if (elementCounts[card.element] >= 3) {
-                            const winnerModal = document.getElementById("winner-modal");
-                            const winnerText = document.getElementById("winner-text");
-
-                            winnerText.textContent = `Player ${p} Wins!`;
-                            winnerModal.style.display = "block";
-                            return true;
-                        }
-                    }
-                });
+        });
+        document.getElementById('skip-turn-1').addEventListener('click', () => {
+            if (enforceGeminiRequirement(1, 'skip')) {
+                skipTurn(1);
             }
-            return false;
-        }
+        });
 
-        // Initialize the game when page loads
-        window.addEventListener('load', function() {
-            initializeHamburgerMenu();
+        document.getElementById('attempt-challenge-2').addEventListener('click', () => {
+            if (enforceGeminiRequirement(2, 'challenge')) {
+                attemptChallenge(2);
+            }
+        });
+        document.getElementById('draw-card-2').addEventListener('click', () => {
+            if (enforceGeminiRequirement(2, 'forsake')) {
+                forsakeAndDraw(2);
+            }
+        });
+        document.getElementById('trade-2').addEventListener('click', () => {
+            if (enforceGeminiRequirement(2, 'trade')) {
+                initiateTrade(2);
+            }
+        });
+        document.getElementById('retrograde-2').addEventListener('click', () => {
+            if (enforceGeminiRequirement(2, 'retrograde')) {
+                useRetrograde(2);
+            }
+        });
+        document.getElementById('skip-turn-2').addEventListener('click', () => {
+            if (enforceGeminiRequirement(2, 'skip')) {
+                skipTurn(2);
+            }
+        });
+
+        document.getElementById('deck-card').addEventListener('click', () => {
+            drawFromDeck();
+        });
+
+        document.getElementById('close-trade-modal').addEventListener('click', closeTradeModal);
+        document.getElementById('trade-cancel-btn').addEventListener('click', cancelTrade);
+        document.getElementById('trade-accept-btn').addEventListener('click', tradeAcceptHandler);
+        document.getElementById('trade-decline-btn').addEventListener('click', tradeDeclineHandler);
+
+        document.getElementById('close-challenge-target').addEventListener('click', closeChallengeTargetModal);
+        document.getElementById('cancel-challenge-target').addEventListener('click', closeChallengeTargetModal);
+
+        document.getElementById('rematch-btn').addEventListener('click', () => {
+            document.getElementById('winner-modal').style.display = 'none';
             initializeGame();
         });
-    </script>
-</body>
+    }
+
+    function initializeHamburgerMenu() {    
+        const hamburgerMenu = document.getElementById('hamburger-menu');
+        const menu = document.getElementById('menu');
+        const menuHome = document.getElementById('menu-home');
+        const menuSettings = document.getElementById('menu-settings');
+        const menuHelp = document.getElementById('menu-help');
+
+        const settingsModal = document.getElementById('game-settings-modal');
+        const helpModal = document.getElementById('game-help-modal');
+
+        const closeSettings = document.getElementById('close-settings');
+        const closeHelp = document.getElementById('close-help');
+        const closeHelpBtn = document.getElementById('close-help-btn');
+
+        const gameSettingsForm = document.getElementById('game-settings-form');
+        const gameSaveSettingsBtn = document.getElementById('game-save-settings');
+
+        hamburgerMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+            menu.classList.toggle('active');
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!menu.contains(e.target) && !hamburgerMenu.contains(e.target)) {
+                menu.classList.remove('active');
+            }
+        });
+
+        menuHome.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = "index.html";
+            menu.classList.remove('active');
+        });
+
+        menuSettings.addEventListener('click', function() {
+            loadGameSettings();
+            settingsModal.style.display = 'block';
+            menu.classList.remove('active');
+        });
+
+        menuHelp.addEventListener('click', function() {
+            helpModal.style.display = 'block';
+            menu.classList.remove('active');
+        });
+
+        closeSettings.addEventListener('click', function() {
+            settingsModal.style.display = 'none';
+        });
+
+        gameSettingsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveGameSettings();
+            gameSaveSettingsBtn.classList.add('btn-saved');
+            gameSaveSettingsBtn.textContent = '✓ Saved!';
+            setTimeout(() => {
+                gameSaveSettingsBtn.classList.remove('btn-saved');
+                gameSaveSettingsBtn.textContent = 'Save Settings';
+                settingsModal.style.display = 'none';
+            }, 1000);
+        });
+
+        closeHelp.addEventListener('click', function() {
+            helpModal.style.display = 'none';
+        });
+
+        closeHelpBtn.addEventListener('click', function() {
+            helpModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function(e) {
+            if (e.target === settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+            if (e.target === helpModal) {
+                helpModal.style.display = 'none';
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                settingsModal.style.display = 'none';
+                helpModal.style.display = 'none';
+                menu.classList.remove('active');
+            }
+        });
+
+        document.getElementById('game-music-volume').addEventListener('input', function() {
+            document.getElementById('game-music-display').textContent = this.value + '%';
+        });
+
+        document.getElementById('game-sfx-volume').addEventListener('input', function() {
+            document.getElementById('game-sfx-display').textContent = this.value + '%';
+        });
+    }
+
+    function loadGameSettings() {
+        const savedMusicVolume = localStorage.getItem('pantheonMusicVolume');
+        const savedSfxVolume = localStorage.getItem('pantheonSfxVolume');
+        
+        if (savedMusicVolume) {
+            document.getElementById('game-music-volume').value = savedMusicVolume;
+            document.getElementById('game-music-display').textContent = savedMusicVolume + '%';
+        }
+        
+        if (savedSfxVolume) {
+            document.getElementById('game-sfx-volume').value = savedSfxVolume;
+            document.getElementById('game-sfx-display').textContent = savedSfxVolume + '%';
+        }
+    }
+
+    function saveGameSettings() {
+        const musicVolume = document.getElementById('game-music-volume').value;
+        const sfxVolume = document.getElementById('game-sfx-volume').value;
+        
+        localStorage.setItem('pantheonMusicVolume', musicVolume);
+        localStorage.setItem('pantheonSfxVolume', sfxVolume);
+    }
+
+    window.addEventListener('load', function() {
+        initializeHamburgerMenu();
+        initializeGame();
+        setupEventListeners();
+    });
+        </script>
+    </body>
 </html>
