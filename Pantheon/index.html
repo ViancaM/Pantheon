@@ -182,7 +182,6 @@
             transform: scale(0.95);
         }
 
-        /* Modal styles for AI selection */
         .opponent-modal-overlay {
             position: fixed;
             top: 0;
@@ -315,7 +314,6 @@
                 </div>
             </div>
             
-            <!-- Settings Tab -->
             <div class="tab-pane fade" id="settings" role="tabpanel">
                 <div class="settings-container">
                     <h2 class="text-center mb-4" style="color: #e2e8ff;">Game Settings</h2>
@@ -446,36 +444,28 @@
             
             opponentOptions.forEach(option => {
                 option.addEventListener('click', function() {
-                    // Remove active class from all options
                     opponentOptions.forEach(opt => opt.classList.remove('active'));
-                    // Add active class to clicked option
                     this.classList.add('active');
-                    // Store selection
                     selectedOpponent = this.getAttribute('data-opponent');
                 });
             });
             
-            // Handle cancel button
             cancelOpponentBtn.addEventListener('click', function() {
                 opponentModal.style.display = 'none';
             });
             
-            // Handle confirm button (start game)
             confirmOpponentBtn.addEventListener('click', function() {
-                // Save opponent selection to localStorage
                 localStorage.setItem('pantheonOpponentType', selectedOpponent);
                 opponentModal.style.display = 'none';
                 window.location.href = "game.html";
             });
             
-            // Close modal when clicking outside
             opponentModal.addEventListener('click', function(e) {
                 if (e.target === opponentModal) {
                     opponentModal.style.display = 'none';
                 }
             });
             
-            // Settings functionality
             saveHomeSettingsBtn.addEventListener('click', function() {
                 saveSettings();
                 this.classList.add('btn-saved');

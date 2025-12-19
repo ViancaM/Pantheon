@@ -1019,18 +1019,6 @@
         }
     }
 
-    function checkAndCompleteScorpio(playerId, completedCard) {
-        if (scorpioAttempt && 
-            scorpioAttempt.playerId === playerId && 
-            scorpioAttempt.targetCard && 
-            scorpioAttempt.targetCard.id === completedCard.id) {
-            
-            completeScorpioIfAttempted(playerId, completedCard);
-            return true;
-        }
-        return false;
-    }
-
     function drawUniqueCard(state, player) {
         if (state.deck.length === 0) {
             reshuffleDiscardIntoDeck(state);
@@ -1087,10 +1075,6 @@
         }, 1800);
     }
 
-    function isGameOver() {
-        return gameState && gameState.gameOver;
-    }
-
     function updatePlayerCounts() {
         if (!gameState) return;
         document.getElementById('player1-active-count').textContent = gameState.players[1].activeCards.length;
@@ -1099,60 +1083,125 @@
         document.getElementById('player2-completed-count').textContent = gameState.players[2].completedCards.length;
     }
 
+    function isAIPlayer(playerId) {
+        return !!(gameState && gameState.ai && playerId === 2);
+    }
+
+    function enforceLibraDisadvantageForAll() {
+        if (!gameState || !gameState.players) return;
+
+        [1, 2].forEach(playerId => {
+            const player = gameState.players[playerId];
+            if (!player) return;
+
+            const totalCount =
+                (player.activeCards ? player.activeCards.length : 0) +
+                (player.completedCards ? player.completedCards.length : 0);
+
+            if (totalCount >= 4) {
+                player.hasMetLibraThreshold = true;
+                return;
+            }
+
+            if (!player.hasMetLibraThreshold) return;
+
+            const activeCards = player.activeCards || [];
+            const libras = activeCards.filter(card => card && card.name === "Libra");
+            if (!libras.length) return;
+
+            let removed = false;
+            libras.forEach(libraCard => {
+                player.activeCards = player.activeCards.filter(c => c.id !== libraCard.id);
+                gameState.discardPile.push(libraCard);
+                removed = true;
+
+                if (player.selectedCard && player.selectedCard.id === libraCard.id) {
+                    player.selectedCard = null;
+                }
+
+                if (
+                    scorpioAttempt &&
+                    scorpioAttempt.playerId === playerId &&
+                    scorpioAttempt.targetCard &&
+                    scorpioAttempt.targetCard.id === libraCard.id
+                ) {
+                    handleScorpioFailure();
+                }
+            });
+
+            if (removed) {
+                showActionFeedback(`Libra failed: Player ${playerId} has fewer than four total cards.`, false);
+            }
+        });
+    }
+
     function createCardElement(card, isCompleted = false, isHidden = false, playerId = null) {
-        const cardDiv = document.createElement('div');
-        
-        let shouldHide = isHidden;
-        if (playerId && gameState) {
+    const cardDiv = document.createElement('div');
+
+    let shouldHide = isHidden;
+    const opponentType = localStorage.getItem('pantheonOpponentType') || 'human';
+
+    if (playerId && gameState) {
+        if (opponentType !== 'human') {
+            if (playerId === 2) {
+                shouldHide = true;
+                if (gameState.players[2]?.piscesActive) {
+                    shouldHide = false;
+                }
+            } else {
+                shouldHide = false;
+            }
+        } else {
             const opponentId = playerId === 1 ? 2 : 1;
             const opponent = gameState.players[opponentId];
-            if (opponent.piscesActive) {
+            if (opponent?.piscesActive) {
                 shouldHide = false;
             }
         }
+    }
 
-        cardDiv.className = `card ${card.element} ${isCompleted ? 'completed' : ''} ${shouldHide ? 'hidden' : ''}`;
-        
-        if (!shouldHide && !isCompleted && card.image) {
-            cardDiv.style.backgroundImage = `url('${card.image}')`;
-        } else if (!shouldHide && isCompleted && card.image) {
-            cardDiv.style.backgroundImage = `url('${card.image}')`;
+    cardDiv.className = `card ${card.element} ${isCompleted ? 'completed' : ''} ${shouldHide ? 'hidden' : ''}`;
+
+    if (!shouldHide && card.image) {
+        cardDiv.style.backgroundImage = `url('${card.image}')`;
+        if (isCompleted) {
             cardDiv.style.opacity = '0.7';
-        } else if (shouldHide) {
-            cardDiv.style.backgroundImage = "url('images/card_back.png')";
+        }
+    } else if (shouldHide) {
+        cardDiv.style.backgroundImage = "url('images/card_back.png')";
+    }
+
+    cardDiv.addEventListener('click', function(e) {
+        const tradeModal = document.getElementById('trade-modal');
+        const challengeTargetModal = document.getElementById('challenge-target-modal');
+
+        const parentId = e.currentTarget.parentElement.id;
+        const currentPlayer = gameState.currentPlayer;
+        const isAI = currentPlayer === 2 && gameState.ai;
+
+        if (tradeModal && tradeModal.style.display === 'block') {
+            return;
         }
 
-        cardDiv.addEventListener('click', function(e) {
-            const tradeModal = document.getElementById('trade-modal');
-            const challengeTargetModal = document.getElementById('challenge-target-modal');
-            
-            const parentId = e.currentTarget.parentElement.id;
-            const currentPlayer = gameState.currentPlayer;
-            const isAI = currentPlayer === 2 && gameState.ai;
-            
-            if (tradeModal && tradeModal.style.display === 'block') {
-                return;
-            }
+        if (challengeTargetModal && challengeTargetModal.style.display === 'block') {
+            handleChallengeTargetSelection(card);
+            return;
+        }
 
-            if (challengeTargetModal && challengeTargetModal.style.display === 'block') {
-                handleChallengeTargetSelection(card);
-                return;
-            }
+        if (isAI && currentPlayer === 2) {
+            showActionFeedback("It's AI's turn. Please wait.", false);
+            return;
+        }
 
-            if (isAI && currentPlayer === 2) {
-                showActionFeedback("It's AI's turn. Please wait.", false);
-                return;
-            }
+        if (currentPlayer === 1 && parentId === 'player1-active') {
+            selectCard(card, 1);
+        } else if (currentPlayer === 2 && parentId === 'player2-active') {
+            selectCard(card, 2);
+        }
+    });
 
-            if (currentPlayer === 1 && parentId === 'player1-active') {
-                selectCard(card, 1);
-            } else if (currentPlayer === 2 && parentId === 'player2-active') {
-                selectCard(card, 2);
-            }
-        });
-        
-        return cardDiv;
-    }
+    return cardDiv;
+}
 
     function selectCard(card, playerId) {
         if (playerId !== gameState.currentPlayer) return;
@@ -1168,6 +1217,7 @@
 
     function updateGameDisplay() {
         if (!gameState) return;
+        enforceLibraDisadvantageForAll();
 
         document.getElementById('current-player').textContent = `Player ${gameState.currentPlayer}`;
 
@@ -1250,7 +1300,9 @@
                     capricornAttempt: null,
                     aquariusAttempt: null,
                     lastAction: null,
-                    lastActionDetails: null
+                    lastActionDetails: null,
+                    completedAtTurnStart: 0,
+                    hasMetLibraThreshold: false
                 },
                 2: { 
                     activeCards: [], 
@@ -1271,7 +1323,9 @@
                     capricornAttempt: null,
                     aquariusAttempt: null,
                     lastAction: null,
-                    lastActionDetails: null
+                    lastActionDetails: null,
+                    completedAtTurnStart: 0,
+                    hasMetLibraThreshold: false
                 }
             },
             deck: shuffleDeck([...allCards]),
@@ -1280,10 +1334,16 @@
             ai: null
         };
 
-        const opponentType = localStorage.getItem('pantheonOpponentType') || 'human';
-        if (opponentType && opponentType !== 'human') {
-            gameState.ai = new EasyAI(gameState);
-            console.log(`AI opponent initialized: ${opponentType}`);
+        const opponentType = (localStorage.getItem('pantheonOpponentType') || 'human').toLowerCase();
+
+        if (opponentType !== 'human') {
+            if (opponentType.includes('hard')) {
+                gameState.ai = new HardAI(gameState);
+            } else if (opponentType.includes('medium')) {
+                gameState.ai = new MediumAI(gameState);
+            } else {
+                gameState.ai = new EasyAI(gameState);
+            }
         }
 
         for (let i = 0; i < 3; i++) {
@@ -1297,6 +1357,9 @@
                 gameState.players[2].activeCards.push(card2);
             }
         }
+
+        gameState.players[1].completedAtTurnStart = gameState.players[1].completedCards.length;
+        gameState.players[2].completedAtTurnStart = gameState.players[2].completedCards.length;
 
         updateGameDisplay();
     }
@@ -1320,6 +1383,14 @@
         playerId: playerId,
         targetCard: null
     };
+
+    if (gameState.ai && playerId === 2) {
+        const target = validTargets[0];
+        scorpioAttempt.targetCard = target;
+
+        handleCardSpecificChallenge(playerId, target, true);
+        return;
+    }
 
     const modal = document.getElementById("challenge-target-modal");
     const container = document.getElementById("challenge-target-cards");
@@ -1362,10 +1433,6 @@
     function onClose() {
         closeChallengeTargetModal();
         handleScorpioFailure();
-    }
-
-    if (closeBtn) {
-        closeBtn.onclick = onClose;
     }
 
     modal.onclick = (e) => {
@@ -1714,162 +1781,226 @@ function handleScorpioFailure() {
     }
 
     function handleVirgoChallenge(playerId, card, isScorpioAttempt = false) {
-        const player = gameState.players[playerId];
-        const otherCards = player.activeCards.filter(c => c.id !== card.id);
+    const player = gameState.players[playerId];
+    const otherCards = player.activeCards.filter(c => c.id !== card.id);
 
-        if (otherCards.length < 2) {
-            showActionFeedback('Virgo: Need at least 2 other cards to forsake.', false);
-            player.selectedCard = null;
-            if (isScorpioAttempt) {
-                handleScorpioFailure();
-            }
-            updateGameDisplay();
-            return;
+    if (otherCards.length < 2) {
+        showActionFeedback('Virgo: Need at least 2 other cards to forsake.', false);
+        player.selectedCard = null;
+        if (isScorpioAttempt) handleScorpioFailure();
+        updateGameDisplay();
+        return;
+    }
+
+    if (gameState.ai && playerId === 2) {
+        const discardA = otherCards[0];
+        const discardB = otherCards[1];
+
+        const discardedElements = [discardA.element, discardB.element];
+
+        player.activeCards = player.activeCards.filter(
+            c => c.id !== discardA.id && c.id !== discardB.id
+        );
+        gameState.discardPile.push(discardA, discardB);
+
+        let drawnCards = [];
+        for (let i = 0; i < 2; i++) {
+            if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
+            if (gameState.deck.length === 0) break;
+            const newCard = gameState.deck.pop();
+            player.activeCards.push(newCard);
+            drawnCards.push(newCard);
         }
 
-        const modalHtml = `
-            <div class="modal-overlay" id="virgo-modal" style="display: block;">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2 class="modal-title">Virgo Challenge</h2>
-                    </div>
-                    <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
-                        Select two cards to forsake (click to select/deselect):
-                    </p>
-                    <div id="virgo-cards-container" class="card-grid-modal"></div>
-                    <div class="modal-buttons-row">
-                        <button class="btn btn-primary" id="virgo-confirm" disabled>Confirm Selection</button>
-                        <button class="btn btn-secondary" id="virgo-cancel">Cancel</button>
-                    </div>
+        const drawnElements = drawnCards.map(c => c.element);
+        const elementCounts = {};
+        discardedElements.forEach(el => {
+            elementCounts[el] = (elementCounts[el] || 0) + 1;
+        });
+
+        let matchedBoth = true;
+        for (const [element, count] of Object.entries(elementCounts)) {
+            const drawnCount = drawnElements.filter(el => el === element).length;
+            if (drawnCount < count) {
+                matchedBoth = false;
+                break;
+            }
+        }
+
+        if (matchedBoth && player.completedCards.length > 0) {
+            const toDiscard = player.completedCards[0];
+            player.completedCards = player.completedCards.filter(c => c.id !== toDiscard.id);
+            gameState.discardPile.push(toDiscard);
+            showActionFeedback(
+                'Virgo completed but lost one completed card due to disadvantage.',
+                true
+            );
+        } else {
+            showActionFeedback('Virgo completed!', true);
+        }
+
+        player.completedCards.push(card);
+        player.activeCards = player.activeCards.filter(c => c.id !== card.id);
+
+        if (isScorpioAttempt) {
+            completeScorpioIfAttempted(playerId, card);
+        }
+
+        player.selectedCard = null;
+
+        setTimeout(() => {
+            refillToThree(gameState, playerId);
+            checkWinCondition();
+            updateGameDisplay();
+            endTurn();
+        }, 800);
+
+        return;
+    }
+
+    const modalHtml = `
+        <div class="modal-overlay" id="virgo-modal" style="display: block;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Virgo Challenge</h2>
+                </div>
+                <p style="color: #c2a8ff; text-align: center; margin-bottom: 20px;">
+                    Select two cards to forsake (click to select/deselect):
+                </p>
+                <div id="virgo-cards-container" class="card-grid-modal"></div>
+                <div class="modal-buttons-row">
+                    <button class="btn btn-primary" id="virgo-confirm" disabled>Confirm Selection</button>
+                    <button class="btn btn-secondary" id="virgo-cancel">Cancel</button>
                 </div>
             </div>
-        `;
+        </div>
+    `;
 
-        document.body.insertAdjacentHTML('beforeend', modalHtml);
-        const modal = document.getElementById('virgo-modal');
-        const container = document.getElementById('virgo-cards-container');
-        const confirmBtn = document.getElementById('virgo-confirm');
-        const cancelBtn = document.getElementById('virgo-cancel');
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    const modal = document.getElementById('virgo-modal');
+    const container = document.getElementById('virgo-cards-container');
+    const confirmBtn = document.getElementById('virgo-confirm');
+    const cancelBtn = document.getElementById('virgo-cancel');
 
-        let selectedCards = [];
+    let selectedCards = [];
 
-        function cleanup() {
-            modal.remove();
-        }
+    function cleanup() {
+        modal.remove();
+    }
 
-        function updateConfirmButton() {
-            confirmBtn.disabled = selectedCards.length !== 2;
-        }
+    function updateConfirmButton() {
+        confirmBtn.disabled = selectedCards.length !== 2;
+    }
 
-        otherCards.forEach(virgoCard => {
-            const cardEl = createCardElement(virgoCard);
-            cardEl.style.cursor = 'pointer';
-            cardEl.addEventListener('click', function() {
-                if (selectedCards.includes(virgoCard.id)) {
-                    selectedCards = selectedCards.filter(id => id !== virgoCard.id);
-                    cardEl.classList.remove('selected');
-                } else if (selectedCards.length < 2) {
-                    selectedCards.push(virgoCard.id);
-                    cardEl.classList.add('selected');
-                }
-                updateConfirmButton();
-            });
-            container.appendChild(cardEl);
+    otherCards.forEach(virgoCard => {
+        const cardEl = createCardElement(virgoCard);
+        cardEl.style.cursor = 'pointer';
+        cardEl.addEventListener('click', function () {
+            if (selectedCards.includes(virgoCard.id)) {
+                selectedCards = selectedCards.filter(id => id !== virgoCard.id);
+                cardEl.classList.remove('selected');
+            } else if (selectedCards.length < 2) {
+                selectedCards.push(virgoCard.id);
+                cardEl.classList.add('selected');
+            }
+            updateConfirmButton();
         });
+        container.appendChild(cardEl);
+    });
 
-        confirmBtn.addEventListener('click', function() {
-            if (selectedCards.length === 2) {
-                const discardedElements = [];
-                const discardedCards = [];
-                
-                selectedCards.forEach(cardId => {
-                    const cardToDiscard = otherCards.find(c => c.id === cardId);
-                    if (cardToDiscard) {
-                        discardedElements.push(cardToDiscard.element);
-                        discardedCards.push(cardToDiscard);
-                        player.activeCards = player.activeCards.filter(c => c.id !== cardToDiscard.id);
-                        gameState.discardPile.push(cardToDiscard);
-                    }
-                });
+    confirmBtn.addEventListener('click', function () {
+        if (selectedCards.length === 2) {
+            const discardedElements = [];
 
-                let drawnCards = [];
-                for (let i = 0; i < 2; i++) {
-                    if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
-                    if (gameState.deck.length === 0) break;
-                    const newCard = gameState.deck.pop();
-                    player.activeCards.push(newCard);
-                    drawnCards.push(newCard);
+            selectedCards.forEach(cardId => {
+                const cardToDiscard = otherCards.find(c => c.id === cardId);
+                discardedElements.push(cardToDiscard.element);
+                player.activeCards = player.activeCards.filter(c => c.id !== cardToDiscard.id);
+                gameState.discardPile.push(cardToDiscard);
+            });
+
+            let drawnCards = [];
+            for (let i = 0; i < 2; i++) {
+                if (gameState.deck.length === 0) reshuffleDiscardIntoDeck(gameState);
+                if (gameState.deck.length === 0) break;
+                const newCard = gameState.deck.pop();
+                player.activeCards.push(newCard);
+                drawnCards.push(newCard);
+            }
+
+            cleanup();
+            updateGameDisplay();
+
+            const drawnElements = drawnCards.map(c => c.element);
+            const elementCounts = {};
+            discardedElements.forEach(el => {
+                elementCounts[el] = (elementCounts[el] || 0) + 1;
+            });
+
+            let matchedBoth = true;
+            for (const [element, count] of Object.entries(elementCounts)) {
+                const drawnCount = drawnElements.filter(el => el === element).length;
+                if (drawnCount < count) {
+                    matchedBoth = false;
+                    break;
+                }
+            }
+
+            setTimeout(() => {
+                if (matchedBoth && player.completedCards.length > 0) {
+                    const toDiscard = player.completedCards[0];
+                    player.completedCards = player.completedCards.filter(c => c.id !== toDiscard.id);
+                    gameState.discardPile.push(toDiscard);
+                    showActionFeedback(
+                        'Virgo completed but lost one completed card due to disadvantage.',
+                        true
+                    );
+                } else {
+                    showActionFeedback('Virgo completed!', true);
                 }
 
-                cleanup();
-                updateGameDisplay();
-                
-                const drawnElements = drawnCards.map(c => c.element);
-                const elementCounts = {};
-                discardedElements.forEach(el => {
-                    elementCounts[el] = (elementCounts[el] || 0) + 1;
-                });
+                player.completedCards.push(card);
+                player.activeCards = player.activeCards.filter(c => c.id !== card.id);
 
-                let matchedBoth = true;
-                for (const [element, count] of Object.entries(elementCounts)) {
-                    const drawnCount = drawnElements.filter(el => el === element).length;
-                    if (drawnCount < count) {
-                        matchedBoth = false;
-                        break;
-                    }
+                if (isScorpioAttempt) {
+                    completeScorpioIfAttempted(playerId, card);
+                    showActionFeedback(
+                        'Virgo completed! Both Virgo and Scorpio completed!',
+                        true
+                    );
                 }
+
+                player.selectedCard = null;
 
                 setTimeout(() => {
-                    if (matchedBoth && player.completedCards.length > 0) {
-                        const toDiscard = player.completedCards[0];
-                        player.completedCards = player.completedCards.filter(c => c.id !== toDiscard.id);
-                        gameState.discardPile.push(toDiscard);
-                        showActionFeedback('Virgo completed but lost one completed card due to disadvantage.', true);
-                    } else {
-                        showActionFeedback('Virgo completed!', true);
-                    }
-
-                    player.completedCards.push(card);
-                    player.activeCards = player.activeCards.filter(c => c.id !== card.id);
-
-                    if (isScorpioAttempt) {
-                        completeScorpioIfAttempted(playerId, card);
-                        showActionFeedback('Virgo completed! Both Virgo and Scorpio completed!', true);
-                    }
-
-                    player.selectedCard = null;
-
-                    setTimeout(() => {
-                        refillToThree(gameState, playerId);
-                        checkWinCondition();
-                        updateGameDisplay();
-                        endTurn();
-                    }, 1000);
+                    refillToThree(gameState, playerId);
+                    checkWinCondition();
+                    updateGameDisplay();
+                    endTurn();
                 }, 1000);
-            }
-        });
+            }, 1000);
+        }
+    });
 
-        function handleCancellation() {
+    cancelBtn.addEventListener('click', function () {
+        cleanup();
+        player.selectedCard = null;
+        if (isScorpioAttempt) handleScorpioFailure();
+        updateGameDisplay();
+    });
+
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
             cleanup();
             player.selectedCard = null;
-            if (isScorpioAttempt) {
-                handleScorpioFailure();
-            }
+            if (isScorpioAttempt) handleScorpioFailure();
             updateGameDisplay();
         }
+    });
 
-        cancelBtn.addEventListener('click', function() {
-            handleChallengeCancellation(playerId, card, isScorpioAttempt, cleanup);
-        });
+    updateConfirmButton();
+}
 
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                handleChallengeCancellation(playerId, card, isScorpioAttempt, cleanup);
-            }
-        });
-
-        updateConfirmButton();
-    }
 
     function handleCapricornChallenge(playerId, card, isScorpioAttempt = false) {
     const player = gameState.players[playerId];
@@ -2422,7 +2553,6 @@ function handleAquariusChallenge(playerId, card, isScorpioAttempt = false) {
     }
 
     cancelBtn.onclick = cancelFlow;
-    if (closeBtn) closeBtn.onclick = cancelFlow;
 
     modal.addEventListener('click', (e) => {
         if (e.target === modal) cancelFlow();
@@ -3324,7 +3454,10 @@ function handleAICancerResponse(cancerPlayerId, offeredCard) {
                 completeScorpioIfAttempted(playerId, card);
                 showActionFeedback("Libra completed! Both Libra and Scorpio completed!", true);
             } else {
-                showActionFeedback("Libra completed! You have all elements.", true);
+                const actorIsAI = isAIPlayer(playerId);
+                const actor = actorIsAI ? "AI" : "You";
+                const verb = actorIsAI ? "has" : "have";
+                showActionFeedback(`Libra completed! ${actor} ${verb} all elements.`, true);
             }
         } else {
             player.activeCards = player.activeCards.filter(c => c.id !== card.id);
@@ -3333,7 +3466,10 @@ function handleAICancerResponse(cancerPlayerId, offeredCard) {
             if (isScorpioAttempt) {
                 handleScorpioFailure();
             } else {
-                showActionFeedback("Libra failed! You don't have all elements. Card forsaken.", false);
+                const actorIsAI = isAIPlayer(playerId);
+                const actor = actorIsAI ? "AI" : "You";
+                const negVerb = actorIsAI ? "doesn't" : "don't";
+                showActionFeedback(`Libra failed! ${actor} ${negVerb} have all elements. Card forsaken.`, false);
             }
         }
         
@@ -3349,42 +3485,47 @@ function handleAICancerResponse(cancerPlayerId, offeredCard) {
     }
 
     function handleSagittariusChallenge(playerId, card, isScorpioAttempt = false) {
-    const challengerId = playerId;
-    const opponentId = challengerId === 1 ? 2 : 1;
+        const challengerId = playerId;
+        const opponentId = challengerId === 1 ? 2 : 1;
 
-    const challenger = gameState.players[challengerId];
-    const opponent = gameState.players[opponentId];
+        const challenger = gameState.players[challengerId];
+        const opponent = gameState.players[opponentId];
 
-    gameState.tradeOffer = {
-        from: challengerId,
-        isSagittarius: true,
-        sagittariusSourceCard: card,
-        isScorpioAttempt
-    };
+        if (!challenger || !opponent) {
+            showActionFeedback("Sagittarius failed: Missing challenger or opponent.", false);
+            return;
+        }
 
-    const opponentIsAI = !!gameState.ai && opponentId === 2;
-
-    if (opponentIsAI) { 
-        if (!challenger.activeCards.length || !opponent.activeCards.length) { 
-            showActionFeedback("AI declined Sagittarius.", false);
+        if (!challenger.activeCards.length || !opponent.activeCards.length) {
+            showActionFeedback("Sagittarius requires both players to have at least one active card.", false);
             gameState.tradeOffer = null;
+            challenger.selectedCard = null;
+            updateGameDisplay();
             endTurn();
             return;
         }
 
-        const takenFromChallenger =
-            challenger.activeCards[Math.floor(Math.random() * challenger.activeCards.length)]; 
+        gameState.tradeOffer = {
+            from: challengerId,
+            isSagittarius: true,
+            sagittariusSourceCard: card,
+            isScorpioAttempt: !!isScorpioAttempt
+        };
 
+        const opponentIsAIResponder = !!gameState.ai && opponentId === 2;
 
-        const givenByOpponent =
-            opponent.activeCards[Math.floor(Math.random() * opponent.activeCards.length)]; 
+        if (opponentIsAIResponder) {
+            const takenFromChallenger =
+                challenger.activeCards[Math.floor(Math.random() * challenger.activeCards.length)];
+            const givenByOpponent =
+                opponent.activeCards[Math.floor(Math.random() * opponent.activeCards.length)];
 
-        performSagittariusSwap(challengerId, takenFromChallenger, givenByOpponent); 
-        return;
+            performSagittariusSwap(challengerId, takenFromChallenger, givenByOpponent);
+            return;
+        }
+
+        openSagittariusHiddenPickModal(challengerId);
     }
-
-    openSagittariusHiddenPickModal(challengerId);
-}
 
 function openSagittariusHiddenPickModal(challengerId) {
     const offer = gameState.tradeOffer;
@@ -3446,50 +3587,57 @@ function openSagittariusHiddenPickModal(challengerId) {
 
         back.onclick = () => {
             cleanup();
-            openSagittariusReturnPickModal(challengerId, c);
+            openSagittariusReturnPickModal(challengerId, c, false);
         };
 
         container.appendChild(back);
     });
 
-    declineBtn.onclick = () => {
-        const sagCard = offer.sagittariusSourceCard; 
+    function handleSagittariusDecline() {
+        const sagCard = offer.sagittariusSourceCard;
         cleanup();
 
-        const p = gameState.players[challengerId]; 
-        p.activeCards = p.activeCards.filter(c => c.id !== sagCard.id); 
-        gameState.discardPile.push(sagCard); 
+        const challenger = gameState.players[challengerId];
+        challenger.activeCards = challenger.activeCards.filter(c => c.id !== sagCard.id);
+        gameState.discardPile.push(sagCard);
 
-        showActionFeedback("Sagittarius was declined — challenge failed.", false); 
+        showActionFeedback("Sagittarius was declined — challenge failed.", false);
 
-        if (offer.isScorpioAttempt) handleScorpioFailure(); 
+        if (offer.isScorpioAttempt) handleScorpioFailure();
 
-        gameState.tradeOffer = null; 
-        updateGameDisplay(); 
+        gameState.tradeOffer = null;
+        updateGameDisplay();
 
         setTimeout(() => {
             refillToThree(gameState, 1);
             refillToThree(gameState, 2);
             endTurn();
         }, 800);
-    };
+    }
+
+    declineBtn.onclick = handleSagittariusDecline;
 
     modal.addEventListener('click', function(e) {
         if (e.target === modal) {
-            cleanup(); 
+            handleSagittariusDecline();
         }
     });
 }
 
-function openSagittariusReturnPickModal(challengerId, takenFromChallenger) {
+function openSagittariusReturnPickModal(challengerId, takenFromChallenger, challengerSelectingOpponent = false) {
     const offer = gameState.tradeOffer;
     const opponentId = challengerId === 1 ? 2 : 1;
     const opponent = gameState.players[opponentId];
 
+    const promptText = challengerSelectingOpponent
+        ? 'Choose an opponent card to take:'
+        : 'Choose a card to give back:';
+
     const modalHtml = `
         <div class="modal-overlay" id="sagittarius-return-modal" style="display:block;">
             <div class="modal-content">
-                <h2 class="modal-title" style="text-align:center;">Give a Card Back</h2>
+                <h2 class="modal-title" style="text-align:center;">Sagittarius Exchange</h2>
+                <p style="color:#c2a8ff;text-align:center;margin-bottom:14px;">${promptText}</p>
 
                 <div id="sagittarius-return-cards" class="card-grid-modal" style="
                     display:flex;
@@ -3511,6 +3659,30 @@ function openSagittariusReturnPickModal(challengerId, takenFromChallenger) {
 
     function cleanup() { modal.remove(); }
 
+    function failExchange() {
+        cleanup();
+        const challenger = gameState.players[challengerId];
+        const sagCard = offer?.sagittariusSourceCard;
+
+        if (challenger && sagCard) {
+            challenger.activeCards = challenger.activeCards.filter(c => c.id !== sagCard.id);
+            gameState.discardPile.push(sagCard);
+        }
+
+        showActionFeedback("Sagittarius was cancelled — challenge failed.", false);
+
+        if (offer?.isScorpioAttempt) handleScorpioFailure();
+
+        gameState.tradeOffer = null;
+        updateGameDisplay();
+
+        setTimeout(() => {
+            refillToThree(gameState, 1);
+            refillToThree(gameState, 2);
+            endTurn();
+        }, 800);
+    }
+
     opponent.activeCards.forEach(c => {
         const el = createCardElement(c);
 
@@ -3528,7 +3700,7 @@ function openSagittariusReturnPickModal(challengerId, takenFromChallenger) {
     });
 
     modal.addEventListener('click', function(e) {
-        if (e.target === modal) cleanup();
+        if (e.target === modal) failExchange();
     });
 }
 
@@ -3545,12 +3717,19 @@ function performSagittariusSwap(challengerId, takenFromChallenger, givenByOppone
     challenger.activeCards.push(givenByOpponent);
     opponent.activeCards.push(takenFromChallenger);
 
+    challenger.selectedCard = null;
+    opponent.selectedCard = null;
+
     if (takenFromChallenger.id === sagCard.id) {
         showActionFeedback("Sagittarius was taken — challenge failed.", false);
         if (offer.isScorpioAttempt) handleScorpioFailure();
     } else {
         challenger.completedCards.push(sagCard);
         challenger.activeCards = challenger.activeCards.filter(c => c.id !== sagCard.id);
+        if (offer.isScorpioAttempt) {
+            completeScorpioIfAttempted(challengerId, sagCard);
+        }
+
         showActionFeedback("Sagittarius completed!", true);
     }
 
@@ -3613,7 +3792,10 @@ function performSagittariusSwap(challengerId, takenFromChallenger, givenByOppone
         );
 
         if (alreadyCompleted) {
-            showActionFeedback(`You already have ${card.name} completed! You must trade or forsake it.`, false);
+            const actorIsAI = isAIPlayer(playerId);
+            const subject = actorIsAI ? "AI already has" : "You already have";
+            const directive = actorIsAI ? "AI must trade or forsake it." : "You must trade or forsake it.";
+            showActionFeedback(`${subject} ${card.name} completed! ${directive}`, false);
             player.selectedCard = null;
             updateGameDisplay();
             return;
@@ -3656,7 +3838,8 @@ function performSagittariusSwap(challengerId, takenFromChallenger, givenByOppone
         
         if (newCard) {
             player.activeCards.push(newCard);
-            showActionFeedback('You forsaked a card and drew a new one.', true);
+            const actor = isAIPlayer(playerId) ? 'AI' : 'You';
+            showActionFeedback(`${actor} forsook a card and drew a new one.`, true);
         } else {
             showActionFeedback("No non-duplicate cards available to draw!", false);
         }
@@ -3684,7 +3867,8 @@ function performSagittariusSwap(challengerId, takenFromChallenger, givenByOppone
 
         if (newCard) {
             player.activeCards.push(newCard);
-            showActionFeedback(`Drew ${newCard.name} from the deck`, true);
+            const actor = isAIPlayer(gameState.currentPlayer) ? "AI drew" : "You drew";
+            showActionFeedback(`${actor} ${newCard.name} from the deck`, true);
         } else {
             showActionFeedback("No non-duplicate cards available to draw!", false);
         }
@@ -3706,13 +3890,15 @@ function performSagittariusSwap(challengerId, takenFromChallenger, givenByOppone
 
         const player = gameState.players[playerId];
         if (player.usedRetrograde) {
-            showActionFeedback("You have already used your Retrograde this game!", false);
+            const actor = isAIPlayer(playerId) ? "AI" : "You";
+            showActionFeedback(`${actor} have already used Retrograde this game!`, false);
             return;
         }
 
         const hasRetrograde = player.activeCards.some(card => card.element === 'retrograde');
         if (!hasRetrograde) {
-            showActionFeedback("You don't have a Retrograde card!", false);
+            const actor = isAIPlayer(playerId) ? "AI" : "You";
+            showActionFeedback(`${actor} don't have a Retrograde card!`, false);
             return;
         }
 
@@ -3756,6 +3942,7 @@ function performSagittariusSwap(challengerId, takenFromChallenger, givenByOppone
     }
 
     function skipTurn(playerId) {
+        enforceGeminiRequirement(playerId, "skip");
         if (playerId !== gameState.currentPlayer) {
             showActionFeedback("It's not your turn!", false);
             return;
@@ -3764,7 +3951,8 @@ function performSagittariusSwap(challengerId, takenFromChallenger, givenByOppone
         const player = gameState.players[playerId];
 
         if (player.lastAction === 'skip') {
-            showActionFeedback("You cannot skip two turns in a row!", false);
+            const actor = isAIPlayer(playerId) ? "AI" : "You";
+            showActionFeedback(`${actor} cannot skip two turns in a row!`, false);
             return;
         }
 
@@ -4346,73 +4534,73 @@ function performSagittariusSwap(challengerId, takenFromChallenger, givenByOppone
 
     function enforceGeminiRequirement(playerId, actionType) {
         const player = gameState.players[playerId];
-        
-        if (player.geminiActive && player.geminiCopyMove) {
-            if (player.geminiCopyMove.action !== actionType) {
-                showActionFeedback("Gemini failed: You didn't copy the opponent's move!", false);
-                
-                const isScorpioTarget = scorpioAttempt && 
-                                    scorpioAttempt.playerId === playerId &&
-                                    scorpioAttempt.targetCard &&
-                                    player.geminiCardId === scorpioAttempt.targetCard.id;
-                
-                const cardsToDiscard = [...player.activeCards];
-                player.activeCards = [];
 
-                cardsToDiscard.forEach(card => {
-                    if (!isScorpioTarget || card.id !== scorpioAttempt.scorpioCard.id) {
-                        gameState.discardPile.push(card);
-                    } else {
-                        player.activeCards.push(card);
-                    }
-                });
-    
-                const geminiCard = allCards.find(c => c.id === player.geminiCardId);
+        if (!player.geminiActive) return true;
+        if (!player.geminiCopyMove) return true; 
 
-                if (geminiCard) {
-                    gameState.discardPile.push(geminiCard);
+        if (player.geminiCopyMove.action !== actionType) {
+            const actor = isAIPlayer(playerId) ? "AI" : "You";
+            showActionFeedback(`Gemini Failed: ${actor} didn't copy the opponent's move!`, false);
+
+            const isScorpioTarget =
+                scorpioAttempt &&
+                scorpioAttempt.playerId === playerId &&
+                scorpioAttempt.targetCard &&
+                scorpioAttempt.targetCard.id === player.geminiCardId;
+
+            const cardsToDiscard = [...player.activeCards];
+            player.activeCards = [];
+
+            cardsToDiscard.forEach(card => {
+                if (isScorpioTarget && scorpioAttempt.scorpioCard && card.id === scorpioAttempt.scorpioCard.id) {
+                    return;
                 }
-                
-                if (isScorpioTarget) {
-                    handleScorpioFailure();
-                }
+                gameState.discardPile.push(card);
+            });
 
-                resetSpecialCardStates(playerId, "Gemini");
-                
-                updateGameDisplay();
-                
-                setTimeout(() => {
-                    refillToThree(gameState, playerId);
-                    checkWinCondition();
-                    updateGameDisplay();
-                    endTurn();
-                }, 1500);
-                return false;
-            } else {
-                player.geminiTurnsRemaining--;
-                
-                if (player.geminiTurnsRemaining <= 0) {
-                    const geminiCard = player.activeCards.find(c => c.id === player.geminiCardId);
-                    if (geminiCard) {
-                        player.activeCards = player.activeCards.filter(c => c.id !== geminiCard.id);
-                        player.completedCards.push(geminiCard);
-                        showActionFeedback("Gemini completed after two turns!", true);
-                        
-                        if (scorpioAttempt && 
-                            scorpioAttempt.playerId === playerId &&
-                            scorpioAttempt.targetCard &&
-                            scorpioAttempt.targetCard.id === geminiCard.id) {
-
-                            completeScorpioIfAttempted(playerId, geminiCard);
-                        }
-                    }
-                    resetSpecialCardStates(playerId, "Gemini");
-                }
-                
-                player.geminiCopyMove = null;
-                return true;
+            if (isScorpioTarget) {
+                handleScorpioFailure();
             }
+
+            player.geminiCopyMove = null;
+            player.selectedCard = null;
+
+            resetSpecialCardStates(playerId, "Gemini");
+
+            if (!isScorpioTarget) {
+                refillToThree(gameState, playerId);
+                checkWinCondition();
+            }
+
+            updateGameDisplay();
+
+            return false;
         }
+
+        player.geminiTurnsRemaining--;
+        player.geminiCopyMove = null;
+
+        if (player.geminiTurnsRemaining <= 0) {
+            const geminiCard = player.activeCards.find(c => c.id === player.geminiCardId);
+            if (geminiCard) {
+                player.activeCards = player.activeCards.filter(c => c.id !== geminiCard.id);
+                player.completedCards.push(geminiCard);
+                showActionFeedback("Gemini completed after two turns!", true);
+
+                if (
+                    scorpioAttempt &&
+                    scorpioAttempt.playerId === playerId &&
+                    scorpioAttempt.targetCard &&
+                    scorpioAttempt.targetCard.id === geminiCard.id
+                ) {
+                    completeScorpioIfAttempted(playerId, geminiCard);
+                }
+            }
+
+            resetSpecialCardStates(playerId, "Gemini");
+            updateGameDisplay();
+        }
+
         return true;
     }
 
@@ -4425,10 +4613,24 @@ function performSagittariusSwap(challengerId, takenFromChallenger, givenByOppone
 
         const previousPlayerId = gameState.currentPlayer;
         const previousPlayer = gameState.players[previousPlayerId];
+        const previousCompletedStart = previousPlayer ? (previousPlayer.completedAtTurnStart ?? previousPlayer.completedCards.length) : 0;
+        const opponentCompletedDuringTurn =
+            previousPlayer && previousPlayer.completedCards.length > previousCompletedStart;
+
+        if (previousPlayer) {
+            previousPlayer.completedAtTurnStart = previousPlayer.completedCards.length;
+        }
         
         gameState.currentPlayer = gameState.currentPlayer === 1 ? 2 : 1;
         
+        if (opponentCompletedDuringTurn && scorpioAttempt && scorpioAttempt.playerId !== previousPlayerId) {
+            handleScorpioFailure();
+        }
+
         const currentPlayer = gameState.players[gameState.currentPlayer];
+        if (currentPlayer) {
+            currentPlayer.completedAtTurnStart = currentPlayer.completedCards.length;
+        }
 
         if (scorpioAttempt && scorpioAttempt.waitingForFinal) {
             if (scorpioAttempt.playerId === gameState.currentPlayer) {
@@ -4528,39 +4730,40 @@ function performSagittariusSwap(challengerId, takenFromChallenger, givenByOppone
             }
         }
 
-        if (previousPlayer.geminiActive) {
-            if (currentPlayer.lastAction) {
-                previousPlayer.geminiCopyMove = {
-                    action: currentPlayer.lastAction,
-                    details: currentPlayer.lastActionDetails
+        if (currentPlayer.geminiActive) {
+            if (previousPlayer.lastAction) {
+                currentPlayer.geminiCopyMove = {
+                    action: previousPlayer.lastAction,
+                    details: previousPlayer.lastActionDetails
                 };
-                previousPlayer.geminiTurnsRemaining--;  
+            } else {
+                currentPlayer.geminiCopyMove = null;
             }
+        }
 
-            if (previousPlayer.geminiTurnsRemaining === 0) {
-                const geminiCard = previousPlayer.activeCards.find(
-                    c => c.id === previousPlayer.geminiCardId
-                );
+        if (previousPlayer.geminiActive && previousPlayer.geminiTurnsRemaining <= 0) {
+            const geminiCard = previousPlayer.activeCards.find(
+                c => c.id === previousPlayer.geminiCardId
+            );
 
-                if (geminiCard) {
-                    previousPlayer.activeCards =
-                        previousPlayer.activeCards.filter(c => c.id !== geminiCard.id);
-                    previousPlayer.completedCards.push(geminiCard);
+            if (geminiCard) {
+                previousPlayer.activeCards =
+                    previousPlayer.activeCards.filter(c => c.id !== geminiCard.id);
+                previousPlayer.completedCards.push(geminiCard);
 
-                    showActionFeedback("Gemini completed after two turns!", true);
+                showActionFeedback("Gemini completed after two turns!", true);
 
-                    if (
-                        scorpioAttempt &&
-                        scorpioAttempt.playerId === previousPlayerId &&
-                        scorpioAttempt.targetCard &&
-                        scorpioAttempt.targetCard.id === geminiCard.id
-                    ) {
-                        completeScorpioIfAttempted(previousPlayerId, geminiCard);
-                    }
+                if (
+                    scorpioAttempt &&
+                    scorpioAttempt.playerId === previousPlayerId &&
+                    scorpioAttempt.targetCard &&
+                    scorpioAttempt.targetCard.id === geminiCard.id
+                ) {
+                    completeScorpioIfAttempted(previousPlayerId, geminiCard);
                 }
-
-                resetSpecialCardStates(previousPlayerId, "Gemini");
             }
+
+            resetSpecialCardStates(previousPlayerId, "Gemini");
         }
 
         gameState.players[1].selectedCard = null;
@@ -4598,96 +4801,324 @@ function performSagittariusSwap(challengerId, takenFromChallenger, givenByOppone
         });
     }
 
+    function normalizeAIDecision(playerId, decision) {
+        const player = gameState.players[playerId];
+        const opponentId = playerId === 1 ? 2 : 1;
+        const opponent = gameState.players[opponentId];
+
+        const normalized = {
+            action: (decision && decision.action) ? decision.action : 'skip',
+            details: decision && decision.details ? { ...decision.details } : null
+        };
+
+        const findChallengeable = () => {
+            return (player.activeCards || []).find(card =>
+                card.element !== 'retrograde' &&
+                card.challenge &&
+                !(player.completedCards || []).some(c => c.name === card.name)
+            ) || (player.activeCards || []).find(card => card.element !== 'retrograde' && card.challenge);
+        };
+
+        const findNonRetro = () => (player.activeCards || []).find(card => card.element !== 'retrograde');
+        const findRetro = () => (player.activeCards || []).find(card => card.element === 'retrograde');
+
+        const fallbackToDrawOrForsake = () => {
+            const card = findNonRetro();
+            if (card) return { action: 'forsake', details: { cardId: card.id } };
+            if ((gameState.deck?.length || 0) > 0) return { action: 'draw', details: null };
+            return { action: 'skip', details: null };
+        };
+
+        switch (normalized.action) {
+            case 'challenge': {
+                const currentId = normalized.details && normalized.details.cardId;
+                const exists = currentId &&
+                    (player.activeCards || []).some(card => card.id === currentId);
+                if (!exists) {
+                    const replacement = findChallengeable();
+                    if (!replacement) return fallbackToDrawOrForsake();
+                    normalized.details = { cardId: replacement.id };
+                }
+                break;
+            }
+            case 'forsake': {
+                const currentId = normalized.details && normalized.details.cardId;
+                const exists = currentId &&
+                    (player.activeCards || []).some(card => card.id === currentId && card.element !== 'retrograde');
+                if (!exists) {
+                    const replacement = findNonRetro();
+                    if (!replacement) return fallbackToDrawOrForsake();
+                    normalized.details = { cardId: replacement.id };
+                }
+                break;
+            }
+            case 'trade': {
+                if (player.taurusActive || !(opponent?.activeCards || []).length) {
+                    return fallbackToDrawOrForsake();
+                }
+                const currentId = normalized.details && normalized.details.cardId;
+                const exists = currentId &&
+                    (player.activeCards || []).some(card => card.id === currentId && card.element !== 'retrograde');
+                if (!exists) {
+                    const replacement = findNonRetro();
+                    if (!replacement) return fallbackToDrawOrForsake();
+                    normalized.details = { cardId: replacement.id };
+                }
+                break;
+            }
+            case 'retrograde': {
+                if (player.taurusActive || player.usedRetrograde) {
+                    return fallbackToDrawOrForsake();
+                }
+                const retroCard = findRetro();
+                if (!retroCard) return fallbackToDrawOrForsake();
+                normalized.details = { cardId: retroCard.id };
+                break;
+            }
+            case 'draw': {
+                normalized.details = null;
+                break;
+            }
+            default:
+                normalized.details = null;
+                break;
+        }
+
+        return normalized;
+    }
+
+    function getFallbackAIMove(playerId) {
+        const player = gameState.players[playerId];
+        if (!player) return null;
+
+        const opponentId = playerId === 1 ? 2 : 1;
+        const opponent = gameState.players[opponentId];
+
+        const challengeable = (player.activeCards || []).find(card =>
+            card.element !== 'retrograde' &&
+            card.challenge &&
+            !(player.completedCards || []).some(c => c.name === card.name)
+        ) || (player.activeCards || []).find(card => card.element !== 'retrograde' && card.challenge);
+
+        if (challengeable) {
+            return { action: 'challenge', details: { cardId: challengeable.id } };
+        }
+
+        const forsakeable = (player.activeCards || []).find(card => card.element !== 'retrograde');
+        if (forsakeable) {
+            return { action: 'forsake', details: { cardId: forsakeable.id } };
+        }
+
+        if ((player.activeCards?.length || 0) < 3 && (gameState.deck?.length || 0) > 0) {
+            return { action: 'draw', details: null };
+        }
+
+        if (!player.taurusActive && forsakeable && (opponent?.activeCards || []).length) {
+            return { action: 'trade', details: { cardId: forsakeable.id } };
+        }
+
+        if (!player.taurusActive && !player.usedRetrograde && (player.activeCards || []).some(card => card.element === 'retrograde')) {
+            const retro = (player.activeCards || []).find(card => card.element === 'retrograde');
+            if (retro) {
+                return { action: 'retrograde', details: { cardId: retro.id } };
+            }
+        }
+
+        if ((gameState.deck?.length || 0) > 0) {
+            return { action: 'draw', details: null };
+        }
+
+        return null;
+    }
+
     function executeAIMove() {
-    if (!gameState.ai || gameState.currentPlayer !== 2) return;
+        if (executeGeminiCopyForAI()) return;
+        if (!gameState.ai || gameState.currentPlayer !== 2) return;
 
-    const aiPlayer = gameState.players[2];
-    const decision = gameState.ai.makeDecision();
-    console.log("AI Decision:", decision);
+        const aiPlayer = gameState.players[2];
+        let decision = null;
 
-    if (gameState.tradeOffer && gameState.tradeOffer.from === 1) {
-        const offer = gameState.tradeOffer;
-
-        if (offer.isCancer) {
-            handleAICancerResponse(offer.from, offer.card);
-        } else {
-            handleAITradeResponse(offer);
+        try {
+            decision = gameState.ai.makeDecision();
+        } catch (e) {
+            console.error("AI makeDecision error:", e);
+            decision = { action: 'skip', details: null };
         }
-        return;
+
+        console.log("AI Decision:", decision);
+
+        if (gameState.tradeOffer && gameState.tradeOffer.from === 1) {
+            const offer = gameState.tradeOffer;
+            if (offer.isCancer) handleAICancerResponse(offer.from, offer.card);
+            else handleAITradeResponse(offer);
+            return;
+        }
+
+        decision = normalizeAIDecision(2, decision);
+
+        if (decision.action === 'skip') {
+            const fallback = getFallbackAIMove(2);
+            if (fallback) {
+                decision = normalizeAIDecision(2, fallback);
+            }
+        }
+
+        switch (decision.action) {
+            case 'draw': {
+                drawFromDeck();
+                break;
+            }
+
+            case 'challenge': {
+                const cardId = decision.details && decision.details.cardId;
+                let card = aiPlayer.activeCards.find(c => c.id === cardId);
+                if (!card) {
+                    card = aiPlayer.activeCards.find(
+                        c => c.element !== 'retrograde' && c.challenge &&
+                            !aiPlayer.completedCards.some(cc => cc.name === c.name)
+                    ) || aiPlayer.activeCards.find(c => c.element !== 'retrograde' && c.challenge);
+                }
+
+                if (!card) {
+                    skipTurn(2);
+                    return;
+                }
+
+                showActionFeedback(`AI attempts the ${card.name} challenge.`, true);
+                aiPlayer.selectedCard = card;
+                updateGameDisplay();
+
+                setTimeout(() => {
+                    if (card.name === "Scorpio") { handleScorpioChallenge(2, card); return; }
+                    if (card.name === "Cancer") { handleCancerChallenge(2, card, false); return; }
+                    if (card.name === "Sagittarius") { handleSagittariusChallenge(2, card, false); return; }
+                    if (card.name === "Leo") { handleLeoChallenge(2, card, false); return; }
+                    attemptChallenge(2);
+                }, 700);
+
+                break;
+            }
+
+            case 'forsake': {
+                const cardId = decision.details && decision.details.cardId;
+                let card = aiPlayer.activeCards.find(c => c.id === cardId);
+                if (!card) {
+                    card = aiPlayer.activeCards.find(c => c.element !== 'retrograde');
+                }
+
+                if (!card) {
+                    skipTurn(2);
+                    return;
+                }
+
+                showActionFeedback(`AI forsakes ${card.name}.`, true);
+                aiPlayer.selectedCard = card;
+                updateGameDisplay();
+
+                setTimeout(() => {
+                    forsakeAndDraw(2);
+                }, 700);
+
+                break;
+            }
+
+            case 'trade': {
+                if (aiPlayer.taurusActive) { skipTurn(2); return; }
+                const cardId = decision.details && decision.details.cardId;
+                let card = aiPlayer.activeCards.find(c => c.id === cardId && c.element !== 'retrograde');
+                if (!card) {
+                    card = aiPlayer.activeCards.find(c => c.element !== 'retrograde');
+                }
+                if (!card) { skipTurn(2); return; }
+                showActionFeedback(`AI initiates a trade using ${card.name}.`, true);
+                aiPlayer.selectedCard = card;
+                updateGameDisplay();
+                initiateTrade(2);
+                aiPlayer.selectedCard = null;
+                break;
+            }
+
+            case 'retrograde': {
+                if (aiPlayer.taurusActive) { skipTurn(2); return; }
+                const hasRetro = aiPlayer.activeCards.some(card => card.element === 'retrograde');
+                if (!hasRetro) { skipTurn(2); return; }
+                showActionFeedback("AI activates Retrograde.", true);
+                useRetrograde(2);
+                break;
+            }
+
+            case 'skip':
+            default: {
+                showActionFeedback("AI skips the turn.", false);
+                skipTurn(2);
+                break;
+            }
+        }
     }
 
-    switch (decision.action) {
-        case 'challenge': {
-            const card = aiPlayer.activeCards.find(c => c.id === (decision.details && decision.details.cardId));
-            if (!card) {
-                skipTurn(2);
-                return;
+    function executeGeminiCopyForAI() {
+        const ai = gameState.players[2];
+        if (!ai.geminiActive || !ai.geminiCopyMove) return false;
+
+        const copy = ai.geminiCopyMove;
+        const action = copy.action;
+
+        enforceGeminiRequirement(2, action);
+
+        if (action === 'challenge') {
+            const target = ai.activeCards.find(c => c.element !== 'retrograde' && c.challenge && !ai.completedCards.some(cc => cc.name === c.name))
+                    || ai.activeCards.find(c => c.element !== 'retrograde' && c.challenge);
+
+            if (target) {
+                ai.selectedCard = target;
+                updateGameDisplay();
+                setTimeout(() => {
+                    if (target.name === "Scorpio") handleScorpioChallenge(2, target);
+                    else attemptChallenge(2);
+                }, 500);
+                return true;
             }
 
-            aiPlayer.selectedCard = card;
-            updateGameDisplay();
-
-            setTimeout(() => {
-                if (card.name === "Scorpio") {
-                    handleScorpioChallenge(2, card);
-                    return;
-                }
-
-                if (card.name === "Cancer") {
-                    handleCancerChallenge(2, card, false);
-                    return;
-                }
-
-                if (card.name === "Sagittarius") {
-                    handleSagittariusChallenge(2, card, false);
-                    return;
-                }
-
-                if (card.name === "Leo") {
-                    handleLeoChallenge(2, card, false);
-                    return;
-                }
-
-                attemptChallenge(2);
-            }, 700);
-
-            break;
-        }
-
-        case 'forsake': {
-            const card = aiPlayer.activeCards.find(c => c.id === (decision.details && decision.details.cardId));
-            if (!card) {
-                skipTurn(2);
-                return;
-            }
-
-            aiPlayer.selectedCard = card;
-            updateGameDisplay();
-
-            setTimeout(() => {
-                forsakeAndDraw(2);
-            }, 700);
-
-            break;
-        }
-
-        case 'trade': {
-            initiateTrade(2);
-            break;
-        }
-
-        case 'retrograde': {
-            useRetrograde(2);
-            break;
-        }
-
-        case 'skip':
-        default: {
             skipTurn(2);
-            break;
+            return true;
         }
+
+        if (action === 'forsake') {
+            const target = ai.activeCards.find(c => c.element !== 'retrograde');
+            if (target) {
+                ai.selectedCard = target;
+                updateGameDisplay();
+                setTimeout(() => {
+                    forsakeAndDraw(2);
+                }, 500);
+                return true;
+            }
+            skipTurn(2);
+            return true;
+        }
+
+        if (action === 'trade') {
+            if (ai.taurusActive) { skipTurn(2); return true; }
+            initiateTrade(2);
+            return true;
+        }
+
+        if (action === 'retrograde') {
+            if (ai.taurusActive) { skipTurn(2); return true; }
+            useRetrograde(2);
+            return true;
+        }
+
+        if (action === 'draw') {
+            drawFromDeck();
+            return true;
+        }
+
+        endTurn();
+        return true;
     }
-}
+
+    //I hate this 
 
     function handleAIScorpioChallenge(scorpioCard) {
         const player = gameState.players[2];
@@ -4799,7 +5230,6 @@ function performSagittariusSwap(challengerId, takenFromChallenger, givenByOppone
         endTurn();
     }, 1000);
 }
-
 
     function handleChallengeCancellation(playerId, card, isScorpioAttempt, cleanupFunction) {
         const player = gameState.players[playerId];
@@ -5111,10 +5541,15 @@ function performSagittariusSwap(challengerId, takenFromChallenger, givenByOppone
         initializeGame();
         setupEventListeners();
 
-        const opponentType = localStorage.getItem('pantheonOpponentType') || 'human';
+        const opponentTypeRaw = localStorage.getItem('pantheonOpponentType') || 'human';
+        const opponentType = opponentTypeRaw.toLowerCase();
         if (opponentType !== 'human') {
+            let opponentLabel = 'AI Opponent';
+            if (opponentType.includes('hard')) opponentLabel = 'Hard Opponent';
+            else if (opponentType.includes('medium')) opponentLabel = 'Medium Opponent';
+            else if (opponentType.includes('easy')) opponentLabel = 'Easy Opponent';
 
-            document.querySelector('.player-2 .player-name').textContent = 'AI Opponent';
+            document.querySelector('.player-2 .player-name').textContent = opponentLabel;
             document.querySelector('.player-2 .player-name').style.color = '#FF5722';
         }
     });
